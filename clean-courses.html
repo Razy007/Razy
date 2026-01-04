@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Nettoyage - Cours Débloqués</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        
+        .warning {
+            background: rgba(255, 152, 0, 0.2);
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .warning h3 {
+            color: #ffa726;
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        
+        .info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 2px solid #2196f3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .value {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(244, 67, 54, 0.5);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        }
+        
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🧹 Nettoyage des Cours</h1>
+            <p class="subtitle">Correction du système de déverrouillage</p>
+            
+            <div class="warning">
+                <h3>⚠️ Attention</h3>
+                <p style="margin: 0; font-size: 0.9rem;">
+                    Cette opération va retirer de votre progression les cours qui ont été incorrectement marqués comme complétés.
+                    <br><br>
+                    <strong>Seuls les cours que vous avez réellement complétés seront conservés.</strong>
+                </p>
+            </div>
+            
+            <div class="status" id="statusDiv">
+                <div class="status-item">
+                    <span class="label">Chargement...</span>
+                </div>
+            </div>
+            
+            <div class="info">
+                <p style="margin: 0; font-size: 0.9rem;">
+                    <strong>📋 Ce qui sera vérifié :</strong><br>
+                    • Votre XP actuel : <span id="currentXP">...</span><br>
+                    • Cours marqués comme complétés : <span id="completedCount">...</span><br>
+                    • Cours qui seront retirés : <span id="toRemoveCount">...</span>
+                </p>
+            </div>
+            
+            <button class="btn" onclick="cleanCourses()">
+                🧹 Nettoyer les Cours
+            </button>
+            
+            <button class="btn btn-secondary" onclick="showDetails()">
+                📊 Afficher les Détails
+            </button>
+            
+            <button class="btn btn-success" onclick="window.location.href='http://localhost:5173/'">
+                🌐 Retour à l'Application
+            </button>
+            
+            <div id="log" class="log"></div>
+        </div>
+    </div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        const statusDiv = document.getElementById('statusDiv');
+        
+        function log(message) {
+            logDiv.style.display = 'block';
+            logDiv.innerHTML += message + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function getUserProgress() {
+            // Try different storage keys
+            const keys = ['userProgress', 'pi_academy_data_v2'];
+            
+            for (const key of keys) {
+                const stored = localStorage.getItem(key);
+                if (stored) {
+                    try {
+                        const data = JSON.parse(stored);
+                        // If it's pi_academy_data_v2, extract userProgress
+                        if (key === 'pi_academy_data_v2' && data.userProgress) {
+                            return { key, data: data.userProgress, fullData: data };
+                        }
+                        // If it's userProgress directly
+                        if (key === 'userProgress') {
+                            return { key, data, fullData: null };
+                        }
+                    } catch (e) {
+                        continue;
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        function displayStatus() {
+            const progress = getUserProgress();
+            
+            if (!progress) {
+                statusDiv.innerHTML = `
+                    <div class="status-item">
+                        <span class="label">⚠️ Aucune donnée trouvée</span>
+                        <span class="value">Connectez-vous d'abord</span>
+                    </div>
+                `;
+                return;
+            }
+            
+            const userProgress = progress.data;
+            const currentXP = userProgress.xp || userProgress.totalPoints || 0;
+            const completedCourses = userProgress.completedCourses || [];
+            
+            // Cours et leurs XP requis
+            const courseRequirements = {
+                '1': 0,  // Introduction (ID numérique)
+                'pi-intro-101': 0,
+                '2': 300,  // Pi Wallet Mastery
+                'pi-wallet-101': 300,
+                '3': 500,  // Anti-Scam Defense
+                'safety-101': 500,
+                '4': 800,  // KYC Process
+                'kyc-101': 800,
+                '5': 1000,  // Blockchain Fundamentals
+                'blockchain-fundamentals': 1000,
+                '6': 1500,  // DeFi Intro
+                'defi-intro': 1500
+            };
+            
+            // Compter les cours à retirer
+            const toRemove = completedCourses.filter(courseId => {
+                const required = courseRequirements[courseId];
+                return required !== undefined && currentXP < required;
+            });
+            
+            statusDiv.innerHTML = `
+                <div class="status-item">
+                    <span class="label">Niveau Actuel</span>
+                    <span class="value">Niveau ${userProgress.level}</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">XP Total</span>
+                    <span class="value">${currentXP} XP</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Cours Complétés</span>
+                    <span class="value">${completedCourses.length}</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">À Retirer</span>
+                    <span class="value" style="color: ${toRemove.length > 0 ? '#f44336' : '#4caf50'};">${toRemove.length}</span>
+                </div>
+            `;
+            
+            document.getElementById('currentXP').textContent = currentXP + ' XP';
+            document.getElementById('completedCount').textContent = completedCourses.length;
+            document.getElementById('toRemoveCount').textContent = toRemove.length;
+        }
+        
+        function cleanCourses() {
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            log('🧹 NETTOYAGE DES COURS');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+            
+            const progress = getUserProgress();
+            
+            if (!progress) {
+                log('❌ ERREUR: Aucune donnée utilisateur trouvée');
+                return;
+            }
+            
+            const userProgress = progress.data;
+            const currentXP = userProgress.xp || userProgress.totalPoints || 0;
+            const completedCourses = userProgress.completedCourses || [];
+            
+            log(`📊 État Actuel:`);
+            log(`   Niveau: ${userProgress.level}`);
+            log(`   XP: ${currentXP}`);
+            log(`   Cours complétés: ${completedCourses.length}\n`);
+            
+            // Cours et leurs XP requis
+            const courseRequirements = {
+                '1': 0,
+                'pi-intro-101': 0,
+                '2': 300,
+                'pi-wallet-101': 300,
+                '3': 500,
+                'safety-101': 500,
+                '4': 800,
+                'kyc-101': 800,
+                '5': 1000,
+                'blockchain-fundamentals': 1000,
+                '6': 1500,
+                'defi-intro': 1500
+            };
+            
+            const courseNames = {
+                '1': 'Introduction à Pi Network',
+                'pi-intro-101': 'Introduction à Pi Network',
+                '2': 'Pi Wallet Mastery',
+                'pi-wallet-101': 'Pi Wallet Mastery',
+                '3': 'Anti-Scam Defense',
+                'safety-101': 'Anti-Scam Defense',
+                '4': 'KYC Process',
+                'kyc-101': 'KYC Process',
+                '5': 'Blockchain Fundamentals',
+                'blockchain-fundamentals': 'Blockchain Fundamentals',
+                '6': 'DeFi Intro',
+                'defi-intro': 'DeFi Intro'
+            };
+            
+            // Filtrer les cours valides
+            const validCourses = completedCourses.filter(courseId => {
+                const required = courseRequirements[courseId];
+                
+                // Si le cours n'est pas dans notre liste, on le garde (peut-être un cours premium)
+                if (required === undefined) {
+                    log(`   ℹ️  "${courseId}" conservé (cours inconnu/premium)`);
+                    return true;
+                }
+                
+                // Si l'utilisateur a assez d'XP, on garde
+                if (currentXP >= required) {
+                    log(`   ✅ "${courseNames[courseId]}" conservé (${currentXP} >= ${required} XP)`);
+                    return true;
+                }
+                
+                // Sinon, on retire
+                log(`   ❌ "${courseNames[courseId]}" retiré (${currentXP} < ${required} XP requis)`);
+                return false;
+            });
+            
+            const removed = completedCourses.length - validCourses.length;
+            
+            log(`\n📝 Résultat:`);
+            log(`   Cours conservés: ${validCourses.length}`);
+            log(`   Cours retirés: ${removed}\n`);
+            
+            // Mettre à jour
+            userProgress.completedCourses = validCourses;
+            
+            // Sauvegarder
+            if (progress.fullData) {
+                progress.fullData.userProgress = userProgress;
+                localStorage.setItem(progress.key, JSON.stringify(progress.fullData));
+            } else {
+                localStorage.setItem(progress.key, JSON.stringify(userProgress));
+            }
+            
+            log('💾 Sauvegarde effectuée\n');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            log('✅ NETTOYAGE TERMINÉ !');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+            log('🔄 Veuillez recharger l\'application pour voir les changements.');
+            
+            displayStatus();
+        }
+        
+        function showDetails() {
+            const progress = getUserProgress();
+            
+            if (!progress) {
+                log('❌ Aucune donnée trouvée\n');
+                return;
+            }
+            
+            const userProgress = progress.data;
+            const currentXP = userProgress.xp || userProgress.totalPoints || 0;
+            
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            log('📊 DÉTAILS DE LA PROGRESSION');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+            
+            log(`🎯 Profil:`);
+            log(`   Niveau: ${userProgress.level}`);
+            log(`   XP: ${currentXP}`);
+            log(`   Cours complétés: ${userProgress.completedCourses.length}\n`);
+            
+            log(`📚 Cours Marqués comme Complétés:`);
+            if (userProgress.completedCourses.length === 0) {
+                log(`   Aucun cours\n`);
+            } else {
+                userProgress.completedCourses.forEach(courseId => {
+                    log(`   ✓ ${courseId}`);
+                });
+                log('');
+            }
+            
+            log(`🔓 Cours Accessibles avec votre XP (${currentXP}):`);
+            if (currentXP >= 0) log(`   ✅ Introduction à Pi Network (0 XP)`);
+            if (currentXP >= 300) log(`   ✅ Pi Wallet Mastery (300 XP)`);
+            if (currentXP >= 500) log(`   ✅ Anti-Scam Defense (500 XP)`);
+            if (currentXP >= 800) log(`   ✅ KYC Process (800 XP)`);
+            if (currentXP >= 1000) log(`   ✅ Blockchain Fundamentals (1000 XP)`);
+            if (currentXP >= 1500) log(`   ✅ DeFi Intro (1500 XP)`);
+            log('');
+        }
+        
+        // Auto-display on load
+        window.onload = () => {
+            displayStatus();
+        };
+    </script>
+</body>
+</html>

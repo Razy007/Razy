@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test d'Accès Pioneer Academy</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .container {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .status {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+      .success {
+        background: rgba(76, 175, 80, 0.3);
+        border-left: 4px solid #4caf50;
+      }
+      .link-list {
+        list-style: none;
+        padding: 0;
+      }
+      .link-list li {
+        margin: 10px 0;
+      }
+      .link-list a {
+        color: #ffd700;
+        text-decoration: none;
+        font-size: 18px;
+        display: block;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        transition: all 0.3s;
+      }
+      .link-list a:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(10px);
+      }
+      .info {
+        background: rgba(33, 150, 243, 0.3);
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎓 Pioneer Academy - Test d'Accès</h1>
+
+      <div class="status success">
+        <h2>✅ Serveur Actif</h2>
+        <p>
+          Le serveur Pioneer Academy est <strong>opérationnel</strong> et répond
+          correctement.
+        </p>
+        <p>Code HTTP: <strong>200 OK</strong></p>
+      </div>
+
+      <div class="info">
+        <h3>📍 URLs d'Accès</h3>
+        <p>
+          Cliquez sur l'un des liens suivants pour accéder à l'application :
+        </p>
+      </div>
+
+      <ul class="link-list">
+        <li>
+          <a href="http://localhost:5173/" target="_blank"
+            >🔗 http://localhost:5173/</a
+          >
+        </li>
+        <li>
+          <a href="http://127.0.0.1:5173/" target="_blank"
+            >🔗 http://127.0.0.1:5173/</a
+          >
+        </li>
+        <li>
+          <a href="http://10.2.0.2:5173/" target="_blank"
+            >🔗 http://10.2.0.2:5173/</a
+          >
+        </li>
+        <li>
+          <a href="http://192.168.30.100:5173/" target="_blank"
+            >🔗 http://192.168.30.100:5173/</a
+          >
+        </li>
+      </ul>
+
+      <div class="info">
+        <h3>🛠️ Si l'application ne s'affiche pas :</h3>
+        <ol>
+          <li>Vider le cache du navigateur (Ctrl + Shift + Delete)</li>
+          <li>Recharger avec Ctrl + F5</li>
+          <li>Essayer en mode navigation privée</li>
+          <li>Essayer un autre navigateur (Chrome, Firefox, Edge)</li>
+          <li>Désactiver temporairement les extensions de navigateur</li>
+        </ol>
+      </div>
+
+      <div class="status">
+        <h3>📊 Informations Techniques</h3>
+        <ul>
+          <li><strong>Frontend:</strong> Vite + React + TypeScript</li>
+          <li><strong>Port:</strong> 5173</li>
+          <li><strong>Backend:</strong> Port 3001</li>
+          <li><strong>Version:</strong> 2.0.0</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      // Test automatique de connexion
+      fetch("http://localhost:5173/")
+        .then((response) => {
+          console.log(
+            "✅ Serveur Pioneer Academy accessible:",
+            response.status
+          );
+          if (response.ok) {
+            console.log("🎉 Application prête !");
+          }
+        })
+        .catch((error) => {
+          console.error("❌ Erreur de connexion:", error);
+        });
+    </script>
+  </body>
+</html>

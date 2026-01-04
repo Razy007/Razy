@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Diagnostic Détaillé - Pioneer Academy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .header h1 {
+            color: #ffc107;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .card h2 {
+            color: #00bcd4;
+            border-bottom: 2px solid #00bcd4;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .status-ok { background: #4caf50; color: white; }
+        .status-warning { background: #ff9800; color: white; }
+        .status-error { background: #f44336; color: white; }
+        .status-info { background: #2196f3; color: white; }
+        
+        .btn {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 193, 7, 0.5);
+        }
+        
+        .btn-fix {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: rgba(0, 188, 212, 0.2);
+            color: #00bcd4;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #4caf50;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .console {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .highlight {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .problem-box {
+            background: rgba(244, 67, 54, 0.1);
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .problem-box h3 {
+            color: #f44336;
+            margin-bottom: 10px;
+        }
+        
+        .solution-box {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        
+        .solution-box h3 {
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .metric-card .label {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card .value {
+            color: #ffc107;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔧 Diagnostic Détaillé - Pioneer Academy</h1>
+            <p>Vérification de l'état de déverrouillage des cours avec les cumuls des XP</p>
+            <p style="margin-top: 10px;">+ Résolution du problème de Referral System Test figé</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <h2>⚡ Actions Rapides</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <button class="btn" onclick="runFullDiagnostic()">🔍 Lancer le Diagnostic Complet</button>
+                <button class="btn-fix btn" onclick="fixReferralPosition()">🔧 Corriger la Position du ReferralTest</button>
+                <button class="btn-fix btn" onclick="fixCourseUnlock()">🔓 Corriger le Déverrouillage des Cours</button>
+                <button class="btn" onclick="window.location.href='http://localhost:5173/'">🌐 Ouvrir l'Application</button>
+                <button class="btn-danger btn" onclick="resetAllData()">🗑️ Réinitialiser toutes les données</button>
+            </div>
+        </div>
+
+        <!-- Problem 1: XP & Course Unlocking -->
+        <div class="card">
+            <h2>📊 Problème 1 : État des Cours et Cumuls XP</h2>
+            <div id="xp-diagnostic" class="loading">Chargement...</div>
+        </div>
+
+        <!-- Problem 2: Referral System Test -->
+        <div class="card">
+            <h2>🎯 Problème 2 : Referral System Test Figé</h2>
+            <div id="referral-diagnostic" class="loading">Chargement...</div>
+        </div>
+
+        <!-- User Progress Details -->
+        <div class="card">
+            <h2>👤 Détails de la Progression Utilisateur</h2>
+            <div id="user-details" class="loading">Chargement...</div>
+        </div>
+
+        <!-- Console Output -->
+        <div class="card">
+            <h2>💻 Console de Diagnostic</h2>
+            <div id="console" class="console">En attente du diagnostic...</div>
+        </div>
+    </div>
+
+    <script>
+        const console_output = document.getElementById('console');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌ ERROR' : type === 'success' ? '✅ SUCCESS' : type === 'warning' ? '⚠️  WARNING' : 'ℹ️  INFO';
+            console_output.innerHTML += `\n[${timestamp}] ${prefix}: ${message}`;
+            console_output.scrollTop = console_output.scrollHeight;
+        }
+
+        // Data from courses.ts
+        const COURSES_DATA = [
+            {
+                id: 'pi-intro-101',
+                title: 'Introduction à Pi Network',
+                requiredLevel: 1,
+                requiredXP: 0,
+                requiredCourses: []
+            },
+            {
+                id: 'pi-wallet-101',
+                title: 'Pi Wallet Mastery',
+                requiredLevel: 2,
+                requiredXP: 300,
+                requiredCourses: ['pi-intro-101']
+            },
+            {
+                id: 'safety-101',
+                title: 'Anti-Scam Defense',
+                requiredLevel: 3,
+                requiredXP: 500,
+                requiredCourses: ['pi-wallet-101']
+            },
+            {
+                id: 'kyc-101',
+                title: 'KYC Process Explained',
+                requiredLevel: 4,
+                requiredXP: 800,
+                requiredCourses: ['safety-101']
+            },
+            {
+                id: 'blockchain-fundamentals',
+                title: 'Blockchain Fundamentals',
+                requiredLevel: 5,
+                requiredXP: 1000,
+                requiredCourses: ['pi-intro-101', 'pi-wallet-101']
+            },
+            {
+                id: 'defi-intro',
+                title: 'Introduction au DeFi',
+                requiredLevel: 7,
+                requiredXP: 1500,
+                requiredCourses: ['blockchain-fundamentals']
+            }
+        ];
+
+        function getUserProgress() {
+            const stored = localStorage.getItem('userProgress');
+            if (!stored) {
+                return {
+                    level: 1,
+                    xp: 0,
+                    totalPoints: 0,
+                    completedCourses: [],
+                    completedLayers: {},
+                    energy: { current: 100, max: 100 }
+                };
+            }
+            return JSON.parse(stored);
+        }
+
+        function calculateLevelFromXP(totalXP) {
+            // Formule utilisée dans App.tsx: level = Math.floor(totalXP / 100) + 1
+            return Math.floor(totalXP / 100) + 1;
+        }
+
+        function checkCourseUnlock(course, userProgress) {
+            const results = {
+                isUnlocked: true,
+                reasons: []
+            };
+
+            // Vérifier le niveau
+            if (course.requiredLevel && userProgress.level < course.requiredLevel) {
+                results.isUnlocked = false;
+                results.reasons.push(`❌ Niveau requis: ${course.requiredLevel} (Actuel: ${userProgress.level})`);
+            } else if (course.requiredLevel) {
+                results.reasons.push(`✅ Niveau requis: ${course.requiredLevel} (Actuel: ${userProgress.level})`);
+            }
+
+            // Vérifier l'XP
+            const currentXP = userProgress.xp || userProgress.totalPoints || 0;
+            if (course.requiredXP && currentXP < course.requiredXP) {
+                results.isUnlocked = false;
+                results.reasons.push(`❌ XP requis: ${course.requiredXP} (Actuel: ${currentXP})`);
+            } else if (course.requiredXP) {
+                results.reasons.push(`✅ XP requis: ${course.requiredXP} (Actuel: ${currentXP})`);
+            }
+
+            // Vérifier les cours prérequis
+            if (course.requiredCourses && course.requiredCourses.length > 0) {
+                const missingCourses = course.requiredCourses.filter(
+                    reqId => !userProgress.completedCourses.includes(reqId)
+                );
+
+                if (missingCourses.length > 0) {
+                    results.isUnlocked = false;
+                    const missingTitles = missingCourses.map(id => {
+                        const c = COURSES_DATA.find(x => x.id === id);
+                        return c ? c.title : id;
+                    }).join(', ');
+                    results.reasons.push(`❌ Cours prérequis manquants: ${missingTitles}`);
+                } else {
+                    results.reasons.push(`✅ Tous les cours prérequis sont complétés`);
+                }
+            }
+
+            return results;
+        }
+
+        function runFullDiagnostic() {
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            log('🚀 Démarrage du diagnostic complet...', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            
+            diagnoseCourseUnlocking();
+            diagnoseReferralPosition();
+            displayUserDetails();
+            
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            log('✅ Diagnostic complet terminé!', 'success');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        }
+
+        function diagnoseCourseUnlocking() {
+            log('🔍 Analyse du système de déverrouillage des cours...', 'info');
+            
+            const userProgress = getUserProgress();
+            const div = document.getElementById('xp-diagnostic');
+            
+            // Calculer le niveau basé sur les XP
+            const calculatedLevel = calculateLevelFromXP(userProgress.xp || 0);
+            const levelMismatch = userProgress.level !== calculatedLevel;
+            
+            let html = '<div class="grid">';
+            html += `<div class="metric-card">
+                <div class="label">XP Total</div>
+                <div class="value">${userProgress.xp || 0}</div>
+            </div>`;
+            html += `<div class="metric-card">
+                <div class="label">Niveau Stocké</div>
+                <div class="value ${levelMismatch ? 'status-error' : 'status-ok'}">${userProgress.level}</div>
+            </div>`;
+            html += `<div class="metric-card">
+                <div class="label">Niveau Calculé</div>
+                <div class="value">${calculatedLevel}</div>
+            </div>`;
+            html += `<div class="metric-card">
+                <div class="label">Cours Complétés</div>
+                <div class="value">${userProgress.completedCourses.length}</div>
+            </div>`;
+            html += '</div>';
+            
+            // Warning si mismatch
+            if (levelMismatch) {
+                log(`⚠️  Incohérence détectée: Niveau stocké (${userProgress.level}) ≠ Niveau calculé (${calculatedLevel})`, 'warning');
+                html += `<div class="problem-box">
+                    <h3>🚨 Incohérence Détectée!</h3>
+                    <p>Le niveau stocké (${userProgress.level}) ne correspond pas au niveau calculé à partir des XP (${calculatedLevel}).</p>
+                    <p><strong>Cause probable:</strong> Corruption de données ou erreur de calcul lors de l'attribution des XP.</p>
+                    <button class="btn-fix btn" onclick="syncLevel()">🔧 Synchroniser le Niveau</button>
+                </div>`;
+            } else {
+                log(`✅ Niveau cohérent: ${userProgress.level} (XP: ${userProgress.xp})`, 'success');
+            }
+            
+            // Tableau des cours
+            html += '<h3 style="margin-top: 20px; color: #00bcd4;">📚 État des Cours</h3>';
+            html += '<table><tr><th>Cours</th><th>ID</th><th>Statut</th><th>Détails</th></tr>';
+            
+            COURSES_DATA.forEach(course => {
+                const unlockStatus = checkCourseUnlock(course, userProgress);
+                const statusClass = unlockStatus.isUnlocked ? 'status-ok' : 'status-error';
+                const statusText = unlockStatus.isUnlocked ? '🔓 DÉBLOQUÉ' : '🔒 VERROUILLÉ';
+                
+                html += `<tr>
+                    <td><strong>${course.title}</strong></td>
+                    <td><code>${course.id}</code></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${unlockStatus.reasons.join('<br>')}</td>
+                </tr>`;
+                
+                if (!unlockStatus.isUnlocked) {
+                    log(`🔒 ${course.title}: ${unlockStatus.reasons.filter(r => r.startsWith('❌')).join(', ')}`, 'warning');
+                }
+            });
+            
+            html += '</table>';
+            div.innerHTML = html;
+        }
+
+        function diagnoseReferralPosition() {
+            log('🔍 Diagnostic du composant ReferralTest...', 'info');
+            
+            const div = document.getElementById('referral-diagnostic');
+            
+            html = `<div class="problem-box">
+                <h3>🎯 Problème Identifié: Composant Figé</h3>
+                <p><strong>Composant:</strong> <code>ReferralTest</code> (src/components/referral/ReferralTest.tsx)</p>
+                <p><strong>Position CSS:</strong> <code>fixed bottom-4 right-4 z-50</code></p>
+                <p><strong>Impact:</strong> Le composant est en position fixe en bas à droite et peut bloquer l'accès à la boutique (Shop) et autres éléments.</p>
+                <p><strong>Condition d'affichage:</strong> <code>process.env.NODE_ENV === 'development'</code> (ligne 2068 de App.tsx)</p>
+            </div>`;
+            
+            html += `<div class="solution-box">
+                <h3>💡 Solutions Recommandées</h3>
+                <ol style="margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Solution 1 (Rapide):</strong> Ajouter un bouton Toggle pour masquer/afficher le composant</li>
+                    <li><strong>Solution 2 (Recommandée):</strong> Rendre le composant draggable (déplaçable) avec React DnD</li>
+                    <li><strong>Solution 3 (Temporaire):</strong> Changer le z-index pour qu'il passe sous la boutique</li>
+                    <li><strong>Solution 4 (Production):</strong> Désactiver complètement en mode développement (commentaire)</li>
+                </ol>
+                <div style="margin-top: 15px;">
+                    <button class="btn-fix btn" onclick="implementToggleSolution()">🔧 Implémenter Solution 1 (Toggle)</button>
+                    <button class="btn btn" onclick="implementDraggableSolution()">🎯 Implémenter Solution 2 (Draggable)</button>
+                    <button class="btn-danger btn" onclick="disableReferralTest()">🚫 Désactiver ReferralTest</button>
+                </div>
+            </div>`;
+            
+            log('✅ Diagnostic ReferralTest terminé', 'success');
+            log('📍 Position actuelle: fixed bottom-4 right-4 (peut bloquer la boutique)', 'warning');
+            
+            div.innerHTML = html;
+        }
+
+        function displayUserDetails() {
+            const userProgress = getUserProgress();
+            const div = document.getElementById('user-details');
+            
+            let html = '<table>';
+            html += '<tr><th>Propriété</th><th>Valeur</th></tr>';
+            html += `<tr><td>Niveau</td><td><span class="highlight">${userProgress.level}</span></td></tr>`;
+            html += `<tr><td>XP Total</td><td><span class="highlight">${userProgress.xp || 0}</span></td></tr>`;
+            html += `<tr><td>Total Points</td><td>${userProgress.totalPoints || 0}</td></tr>`;
+            html += `<tr><td>Énergie</td><td>${userProgress.energy?.current || 0} / ${userProgress.energy?.max || 100}</td></tr>`;
+            html += `<tr><td>Cours Complétés</td><td>${userProgress.completedCourses.length > 0 ? userProgress.completedCourses.join(', ') : '<em>Aucun</em>'}</td></tr>`;
+            html += `<tr><td>Code Parrainage</td><td><code>${userProgress.referralCode || 'N/A'}</code></td></tr>`;
+            html += '</table>';
+            
+            div.innerHTML = html;
+            
+            log(`📊 Progression: Niveau ${userProgress.level}, ${userProgress.xp} XP, ${userProgress.completedCourses.length} cours complétés`, 'info');
+        }
+
+        function syncLevel() {
+            const userProgress = getUserProgress();
+            const calculatedLevel = calculateLevelFromXP(userProgress.xp || 0);
+            
+            userProgress.level = calculatedLevel;
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+            
+            log(`✅ Niveau synchronisé: ${calculatedLevel}`, 'success');
+            alert(`✅ Niveau synchronisé!\n\nNouveau niveau: ${calculatedLevel}\nBasé sur ${userProgress.xp} XP\n\nRechargez la page principale pour voir les changements.`);
+            runFullDiagnostic();
+        }
+
+        function fixCourseUnlock() {
+            const userProgress = getUserProgress();
+            
+            // S'assurer que le niveau et l'XP sont corrects
+            const calculatedLevel = calculateLevelFromXP(userProgress.xp || 0);
+            userProgress.level = calculatedLevel;
+            
+            // S'assurer que les cours de base sont marqués comme complétés si l'utilisateur a un niveau élevé
+            if (userProgress.level >= 2 && !userProgress.completedCourses.includes('pi-intro-101')) {
+                userProgress.completedCourses.push('pi-intro-101');
+                log('✅ Cours "Introduction à Pi Network" marqué comme complété', 'success');
+            }
+            
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+            
+            log('✅ Correction appliquée! Rechargez l\'application.', 'success');
+            alert('✅ Correction appliquée!\n\nVeuillez recharger la page principale de l\'application pour voir les changements.');
+            runFullDiagnostic();
+        }
+
+        function fixReferralPosition() {
+            alert('🔧 Cette action va créer un fichier corrigé pour ReferralTest.\n\nRetournez dans l\'éditeur de code pour appliquer les modifications.');
+            log('ℹ️  Pour corriger ReferralTest, voir les solutions proposées dans le diagnostic', 'info');
+        }
+
+        function implementToggleSolution() {
+            alert('💡 Solution 1: Ajouter un bouton Toggle\n\nCette solution nécessite de modifier le code source.\nVoir la console pour les instructions.');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+            log('SOLUTION 1: Bouton Toggle pour ReferralTest', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+            log('1. Ajouter un état pour contrôler la visibilité:', 'info');
+            log('   const [showReferralTest, setShowReferralTest] = useState(false);', 'info');
+            log('', 'info');
+            log('2. Ajouter un bouton toggle dans l\'interface:', 'info');
+            log('   <button onClick={() => setShowReferralTest(!showReferralTest)}>Toggle Test</button>', 'info');
+            log('', 'info');
+            log('3. Conditionner l\'affichage:', 'info');
+            log('   {showReferralTest && <ReferralTest />}', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+        }
+
+        function implementDraggableSolution() {
+            alert('💡 Solution 2: Rendre le composant Draggable\n\nCette solution nécessite d\'installer react-draggable.\nVoir la console pour les instructions.');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+            log('SOLUTION 2: Composant Draggable', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+            log('1. Installer la dépendance:', 'info');
+            log('   npm install react-draggable', 'info');
+            log('', 'info');
+            log('2. Wrapper le composant avec Draggable:', 'info');
+            log('   <Draggable><ReferralTest /></Draggable>', 'info');
+            log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'info');
+        }
+
+        function disableReferralTest() {
+            if (confirm('🚫 Voulez-vous vraiment désactiver ReferralTest?\n\nCette action nécessitera de modifier le code source.')) {
+                alert('Pour désactiver ReferralTest:\n\n1. Ouvrez src/App.tsx\n2. Ligne 2068: Commentez la ligne\n   {/* {process.env.NODE_ENV === \'development\' && <ReferralTest />} */}\n\nOu changez la condition pour ne jamais afficher.');
+                log('ℹ️  Pour désactiver: Commenter la ligne 2068 dans App.tsx', 'info');
+            }
+        }
+
+        function resetAllData() {
+            if (confirm('⚠️ ATTENTION: Cette action va supprimer TOUTES vos données!\n\nÊtes-vous sûr de vouloir continuer?')) {
+                localStorage.clear();
+                log('🗑️ Toutes les données ont été supprimées', 'warning');
+                alert('✅ Données réinitialisées!\n\nRechargez la page pour recommencer.');
+                runFullDiagnostic();
+            }
+        }
+
+        // Auto-run on load
+        window.onload = () => {
+            setTimeout(runFullDiagnostic, 500);
+        };
+    </script>
+</body>
+</html>

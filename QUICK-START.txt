@@ -1,0 +1,138 @@
+╔══════════════════════════════════════════════════════════════════╗
+║                  🆘 RESCUE MODE - MODE D'EMPLOI                  ║
+║                     VPS Pioneer Academy                          ║
+╚══════════════════════════════════════════════════════════════════╝
+
+⏱️  TEMPS TOTAL: 15 MINUTES
+🎯  OBJECTIF: Rétablir SSH sur pioneer@77.42.75.58
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 1️⃣  HETZNER WEB - Activer Rescue Mode                           │
+└──────────────────────────────────────────────────────────────────┘
+
+URL: https://console.hetzner.cloud/
+
+Actions:
+  ✓ Se connecter
+  ✓ Servers → Cliquer sur le serveur (77.42.75.58)
+  ✓ Onglet "Rescue" (en haut)
+  ✓ Bouton "Enable rescue & power cycle"
+  ✓ 📋 COPIER le mot de passe Rescue affiché
+  ✓ Attendre 1 minute
+
+Résultat: Badge "Rescue" visible sur le serveur
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 2️⃣  POWERSHELL - Connexion en mode Rescue                        │
+└──────────────────────────────────────────────────────────────────┘
+
+Commande:
+  ssh root@77.42.75.58
+
+Actions:
+  ✓ Taper: yes
+  ✓ Coller le MOT DE PASSE RESCUE
+  ✓ Entrée
+
+⚠️  Le mot de passe ne s'affiche pas - NORMAL !
+
+Résultat: root@rescue ~ #
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 3️⃣  RESCUE - Exécuter les commandes                              │
+└──────────────────────────────────────────────────────────────────┘
+
+COPIER/COLLER depuis rescue-commands.txt:
+
+# Identifier le disque
+lsblk
+
+# Monter (ADAPTER sda1 si besoin)
+mount /dev/sda1 /mnt
+ls /mnt
+
+# Configuration SSH
+mkdir -p /mnt/home/pioneer/.ssh
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILTlNH7VhnZfPxmoLsy0HyKKhF5xVlyO5vE5SKGGhG0I abdoulrazaktanko06@gmail.com" > /mnt/home/pioneer/.ssh/authorized_keys
+chmod 700 /mnt/home/pioneer/.ssh
+chmod 600 /mnt/home/pioneer/.ssh/authorized_keys
+chown -R 1000:1000 /mnt/home/pioneer/.ssh
+
+# Vérification
+cat /mnt/home/pioneer/.ssh/authorized_keys
+
+Résultat: Clé SSH visible ✅
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 4️⃣  RESCUE - Diagnostic (IMPORTANT!)                             │
+└──────────────────────────────────────────────────────────────────┘
+
+# Frontend
+ls -la /mnt/var/www/pioneer-academy/frontend/
+
+# Nginx
+cat /mnt/etc/nginx/sites-available/pioneer-academy
+
+📤 ACTION: COPIER LES 2 RÉSULTATS ET ENVOYER À L'ASSISTANT !
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 5️⃣  SORTIE - Quitter Rescue Mode                                 │
+└──────────────────────────────────────────────────────────────────┘
+
+Dans le terminal Rescue:
+  exit
+
+Sur Hetzner Console:
+  ✓ Servers → Votre serveur
+  ✓ Onglet "Rescue"
+  ✓ "Disable rescue & reboot"
+  ✓ Attendre 1 minute
+
+Résultat: Badge "Rescue" disparaît
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 6️⃣  TEST - Connexion SSH normale                                 │
+└──────────────────────────────────────────────────────────────────┘
+
+Commande:
+  ssh pioneer@77.42.75.58
+
+🎉 CONNEXION AUTO SANS MOT DE PASSE !
+
+pioneer@pioneer-academy:~$ ✅
+
+╔══════════════════════════════════════════════════════════════════╗
+║                        AIDE RAPIDE                               ║
+╚══════════════════════════════════════════════════════════════════╝
+
+❓ Mot de passe Rescue ne marche pas
+   → Vérifier badge "Rescue" dans Hetzner
+   → Attendre 2 minutes après activation
+
+❓ mount: device not found
+   → Vérifier avec lsblk
+   → Adapter sda1 → nvme0n1p1 ou vda1
+
+❓ ssh pioneer ne marche pas après exit
+   → Rescue Mode bien désactivé ?
+   → Badge "Rescue" a disparu ?
+   → Attendu 1 minute après reboot ?
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    FICHIERS DE RÉFÉRENCE                          ║
+╚══════════════════════════════════════════════════════════════════╝
+
+📖 GUIDE-RESCUE-MODE.md     → Guide détaillé illustré
+📋 rescue-commands.txt      → Commandes copier/coller
+📊 RAPPORT-RESCUE-MODE.md   → Rapport technique complet
+🤖 rescue-mode-setup.ps1    → Script PowerShell (optionnel)
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    👉 COMMENCEZ ICI                               ║
+╚══════════════════════════════════════════════════════════════════╝
+
+1. Ouvrir: https://console.hetzner.cloud/
+2. Suivre les étapes 1️⃣  à 6️⃣  ci-dessus
+3. Envoyer les résultats du diagnostic (étape 4️⃣ )
+
+⏱️  15 minutes → SSH fonctionnel ! 🚀

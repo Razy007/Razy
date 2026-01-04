@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostic - Unlock Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        h1 {
+            color: #ffc107;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        h2 {
+            color: #00bcd4;
+            border-bottom: 2px solid #00bcd4;
+            padding-bottom: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .unlocked {
+            background: #4caf50;
+            color: white;
+        }
+        .locked {
+            background: #f44336;
+            color: white;
+        }
+        .warning {
+            background: #ff9800;
+            color: white;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #4caf50;
+            font-family: 'Courier New', monospace;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        th {
+            background: rgba(0, 188, 212, 0.2);
+            color: #00bcd4;
+        }
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        button {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .fix-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+        }
+        #result {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+        .highlight {
+            background: rgba(255, 193, 7, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔍 Diagnostic Détaillé - Pioneer Academy</h1>
+        <p style="text-align: center; color: #aaa;">Vérification de l'état de déverrouillage des cours</p>
+    </div>
+
+    <div class="card">
+        <h2>📊 État Actuel de l'Utilisateur</h2>
+        <div id="user-status">Chargement...</div>
+    </div>
+
+    <div class="card">
+        <h2>🎓 Statut des Cours</h2>
+        <div id="courses-status">Chargement...</div>
+    </div>
+
+    <div class="card">
+        <h2>🔧 Actions</h2>
+        <button onclick="checkUnlockStatus()">🔄 Recharger le Diagnostic</button>
+        <button class="fix-btn" onclick="fixPiWalletUnlock()">🔓 Débloquer Pi Wallet Mastery</button>
+        <button class="fix-btn" onclick="markIntroAsComplete()">✅ Marquer "Intro à Pi Network" comme complété</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const COURSES_DATA = [
+            {
+                id: 'pi-intro-101',
+                title: 'Introduction à Pi Network',
+                requiredLevel: 1,
+                requiredXP: 0,
+                requiredCourses: []
+            },
+            {
+                id: 'pi-wallet-101',
+                title: 'Pi Wallet Mastery',
+                requiredLevel: 2,
+                requiredXP: 300,
+                requiredCourses: ['pi-intro-101']
+            },
+            {
+                id: 'safety-101',
+                title: 'Anti-Scam Defense',
+                requiredLevel: 3,
+                requiredXP: 500,
+                requiredCourses: ['pi-wallet-101']
+            },
+            {
+                id: 'kyc-101',
+                title: 'KYC Process Explained',
+                requiredLevel: 4,
+                requiredXP: 800,
+                requiredCourses: ['safety-101']
+            },
+            {
+                id: 'blockchain-fundamentals',
+                title: 'Blockchain Fundamentals',
+                requiredLevel: 5,
+                requiredXP: 1000,
+                requiredCourses: ['pi-intro-101', 'pi-wallet-101']
+            },
+            {
+                id: 'defi-intro',
+                title: 'Introduction au DeFi',
+                requiredLevel: 7,
+                requiredXP: 1500,
+                requiredCourses: ['blockchain-fundamentals']
+            }
+        ];
+
+        function getUserProgress() {
+            const stored = localStorage.getItem('userProgress');
+            if (!stored) {
+                return {
+                    level: 1,
+                    xp: 0,
+                    totalPoints: 0,
+                    completedCourses: [],
+                    completedLayers: {}
+                };
+            }
+            return JSON.parse(stored);
+        }
+
+        function calculateLevel(totalXP) {
+            return Math.floor(Math.sqrt(totalXP / 100)) + 1;
+        }
+
+        function getXPForNextLevel(currentLevel) {
+            return Math.pow(currentLevel, 2) * 100;
+        }
+
+        function checkCourseUnlock(course, userProgress) {
+            const results = {
+                isUnlocked: true,
+                reasons: []
+            };
+
+            // Vérifier le niveau
+            if (course.requiredLevel && userProgress.level < course.requiredLevel) {
+                results.isUnlocked = false;
+                results.reasons.push(`❌ Niveau requis: ${course.requiredLevel} (Actuel: ${userProgress.level})`);
+            } else if (course.requiredLevel) {
+                results.reasons.push(`✅ Niveau requis: ${course.requiredLevel} (Actuel: ${userProgress.level})`);
+            }
+
+            // Vérifier l'XP
+            const currentXP = userProgress.xp || userProgress.totalPoints || 0;
+            if (course.requiredXP && currentXP < course.requiredXP) {
+                results.isUnlocked = false;
+                results.reasons.push(`❌ XP requis: ${course.requiredXP} (Actuel: ${currentXP})`);
+            } else if (course.requiredXP) {
+                results.reasons.push(`✅ XP requis: ${course.requiredXP} (Actuel: ${currentXP})`);
+            }
+
+            // Vérifier les cours prérequis
+            if (course.requiredCourses && course.requiredCourses.length > 0) {
+                const missingCourses = course.requiredCourses.filter(
+                    reqId => !userProgress.completedCourses.includes(reqId)
+                );
+
+                if (missingCourses.length > 0) {
+                    results.isUnlocked = false;
+                    const missingTitles = missingCourses.map(id => {
+                        const c = COURSES_DATA.find(x => x.id === id);
+                        return c ? c.title : id;
+                    }).join(', ');
+                    results.reasons.push(`❌ Cours prérequis manquants: ${missingTitles}`);
+                } else {
+                    results.reasons.push(`✅ Tous les cours prérequis sont complétés`);
+                }
+            }
+
+            return results;
+        }
+
+        function checkUnlockStatus() {
+            const userProgress = getUserProgress();
+            const userStatusDiv = document.getElementById('user-status');
+            const coursesStatusDiv = document.getElementById('courses-status');
+
+            // Afficher l'état de l'utilisateur
+            const nextLevelXP = getXPForNextLevel(userProgress.level);
+            const xpProgress = ((userProgress.xp % 100) / 100 * 100).toFixed(1);
+
+            userStatusDiv.innerHTML = `
+                <table>
+                    <tr>
+                        <th>Propriété</th>
+                        <th>Valeur</th>
+                    </tr>
+                    <tr>
+                        <td>Niveau Actuel</td>
+                        <td><span class="highlight">Niveau ${userProgress.level}</span></td>
+                    </tr>
+                    <tr>
+                        <td>XP Total</td>
+                        <td><span class="highlight">${userProgress.xp || userProgress.totalPoints || 0} XP</span></td>
+                    </tr>
+                    <tr>
+                        <td>XP pour Niveau Suivant</td>
+                        <td>${nextLevelXP} XP (Progression: ${xpProgress}%)</td>
+                    </tr>
+                    <tr>
+                        <td>Cours Complétés</td>
+                        <td>${userProgress.completedCourses.length > 0 ? userProgress.completedCourses.join(', ') : '<em>Aucun</em>'}</td>
+                    </tr>
+                </table>
+            `;
+
+            // Vérifier chaque cours
+            let coursesHTML = '<table><tr><th>Cours</th><th>Statut</th><th>Détails</th></tr>';
+
+            COURSES_DATA.forEach(course => {
+                const unlockStatus = checkCourseUnlock(course, userProgress);
+                const statusClass = unlockStatus.isUnlocked ? 'unlocked' : 'locked';
+                const statusText = unlockStatus.isUnlocked ? '🔓 DÉBLOQUÉ' : '🔒 VERROUILLÉ';
+
+                coursesHTML += `
+                    <tr>
+                        <td><strong>${course.title}</strong><br><code>${course.id}</code></td>
+                        <td><span class="status ${statusClass}">${statusText}</span></td>
+                        <td>${unlockStatus.reasons.join('<br>')}</td>
+                    </tr>
+                `;
+            });
+
+            coursesHTML += '</table>';
+            coursesStatusDiv.innerHTML = coursesHTML;
+
+            // Diagnostic spécifique pour Pi Wallet Mastery
+            const piWalletCourse = COURSES_DATA.find(c => c.id === 'pi-wallet-101');
+            const piWalletStatus = checkCourseUnlock(piWalletCourse, userProgress);
+            
+            if (!piWalletStatus.isUnlocked) {
+                document.getElementById('result').innerHTML = `
+🚨 PROBLÈME DÉTECTÉ avec "Pi Wallet Mastery"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Raisons du verrouillage:
+${piWalletStatus.reasons.join('\n')}
+
+📋 Pour débloquer ce cours, vous devez:
+${!userProgress.completedCourses.includes('pi-intro-101') ? '• Compléter le cours "Introduction à Pi Network"' : '✅ Cours Intro complété'}
+${userProgress.level < 2 ? '• Atteindre le niveau 2 (actuellement: ' + userProgress.level + ')' : '✅ Niveau suffisant'}
+${(userProgress.xp || 0) < 300 ? '• Atteindre 300 XP (actuellement: ' + (userProgress.xp || 0) + ')' : '✅ XP suffisant'}
+
+💡 SOLUTION: Utilisez le bouton "Débloquer Pi Wallet Mastery" ci-dessus
+`;
+            } else {
+                document.getElementById('result').innerHTML = `✅ Le cours "Pi Wallet Mastery" est correctement débloqué!`;
+            }
+        }
+
+        function fixPiWalletUnlock() {
+            const userProgress = getUserProgress();
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = '🔄 Correction en cours...\n';
+
+            // S'assurer que le niveau et l'XP sont corrects
+            if (userProgress.level < 7) {
+                userProgress.level = 7;
+                resultDiv.innerHTML += '✅ Niveau mis à jour: 7\n';
+            }
+
+            if ((userProgress.xp || 0) < 696) {
+                userProgress.xp = 696;
+                userProgress.totalPoints = 696;
+                resultDiv.innerHTML += '✅ XP mis à jour: 696\n';
+            }
+
+            // S'assurer que 'pi-intro-101' est marqué comme complété
+            if (!userProgress.completedCourses.includes('pi-intro-101')) {
+                userProgress.completedCourses.push('pi-intro-101');
+                resultDiv.innerHTML += '✅ Cours "Introduction à Pi Network" marqué comme complété\n';
+            }
+
+            // Sauvegarder
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+            resultDiv.innerHTML += '\n✅ CORRECTION APPLIQUÉE!\n';
+            resultDiv.innerHTML += '\n🔄 Rechargez la page principale de l\'application pour voir les changements.\n';
+
+            // Recharger le diagnostic
+            setTimeout(checkUnlockStatus, 500);
+        }
+
+        function markIntroAsComplete() {
+            const userProgress = getUserProgress();
+            const resultDiv = document.getElementById('result');
+
+            if (!userProgress.completedCourses.includes('pi-intro-101')) {
+                userProgress.completedCourses.push('pi-intro-101');
+                localStorage.setItem('userProgress', JSON.stringify(userProgress));
+                resultDiv.innerHTML = '✅ Cours "Introduction à Pi Network" marqué comme complété!\n\n🔄 Rechargez la page.';
+                setTimeout(checkUnlockStatus, 500);
+            } else {
+                resultDiv.innerHTML = '⚠️ Le cours était déjà marqué comme complété.';
+            }
+        }
+
+        // Charger au démarrage
+        window.onload = () => {
+            checkUnlockStatus();
+        };
+    </script>
+</body>
+</html>
