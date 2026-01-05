@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Copy, TrendingUp, Award, Gift, Share2, X, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import ReferralAPI from '../../services/ReferralAPI';
 
 interface ReferralDashboardProps {
@@ -8,6 +9,7 @@ interface ReferralDashboardProps {
 }
 
 export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken, onClose }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [referralData, setReferralData] = useState<any>(null);
   const [claiming, setClaiming] = useState(false);
@@ -117,7 +119,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
       }
     } catch (error) {
       console.error('Error loading referral data:', error);
-      alert('❌ Erreur lors du chargement des données de parrainage');
+      alert(t('referral.error_loading'));
     } finally {
       setLoading(false);
     }
@@ -131,7 +133,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
       
       // Mode mock
       if (!userToken || userToken === 'MOCK') {
-        alert(`✅ Récompenses réclamées!\n\n+${referralData.stats.pendingRewards.xp} XP\n+${referralData.stats.pendingRewards.pi.toFixed(6)}π`);
+        alert(t('referral.rewards_claimed', { xp: referralData.stats.pendingRewards.xp, pi: referralData.stats.pendingRewards.pi.toFixed(6) }));
         
         // Réinitialiser les récompenses en attente
         setReferralData({
@@ -151,12 +153,17 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
       const result = await ReferralAPI.claimRewards(userToken);
       
       if (result.success) {
-        alert(`✅ Récompenses réclamées!\n\n+${result.data.claimed.xp} XP\n+${result.data.claimed.pi.toFixed(6)}π\n\nNouveau solde:\n${result.data.newBalance.xp} XP\n${result.data.newBalance.pi.toFixed(6)}π`);
+        alert(t('referral.rewards_claimed_balance', { 
+            xp: result.data.claimed.xp, 
+            pi: result.data.claimed.pi.toFixed(6),
+            newXp: result.data.newBalance.xp,
+            newPi: result.data.newBalance.pi.toFixed(6)
+        }));
         loadReferralData(); // Recharger les données
       }
     } catch (error) {
       console.error('Error claiming rewards:', error);
-      alert('❌ Erreur lors de la réclamation des récompenses');
+      alert(t('referral.error_claiming'));
     } finally {
       setClaiming(false);
     }
@@ -165,18 +172,18 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
   const copyLink = () => {
     const success = ReferralAPI.copyToClipboard(referralData?.code.shareLink || '');
     if (success) {
-      alert('✅ Lien copié dans le presse-papier!');
+      alert(t('referral.link_copied'));
     } else {
-      alert('❌ Impossible de copier le lien');
+      alert(t('referral.link_copy_error'));
     }
   };
 
   const copyCode = () => {
     const success = ReferralAPI.copyToClipboard(referralData?.code.referralCode || '');
     if (success) {
-      alert('✅ Code copié!');
+      alert(t('referral.code_copied'));
     } else {
-      alert('❌ Impossible de copier le code');
+      alert(t('referral.code_copy_error'));
     }
   };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Zap, TrendingUp, Infinity, Clock, DollarSign } from 'lucide-react';
 import { EnergyState } from '../../types';
 
@@ -54,35 +55,37 @@ const ENERGY_PRODUCTS: EnergyProduct[] = [
 ];
 
 export const EnergyShop: React.FC<EnergyShopProps> = ({ energy, piBalance, onClose, onPurchase }) => {
+    const { t } = useTranslation();
     const handlePurchase = (product: EnergyProduct) => {
         // Round to 6 decimal places to avoid floating point precision issues
         const balance = Math.round(piBalance * 1000000) / 1000000;
         const cost = Math.round(product.piCost * 1000000) / 1000000;
         
         if (balance < cost) {
-            alert(`⚠️ Solde insuffisant!\n\nCoût: ${product.piCost}π\nVotre solde: ${piBalance.toFixed(6)}π\nManquant: ${(product.piCost - piBalance).toFixed(6)}π`);
+            alert(t('shop.insufficient_balance_detail', { cost: product.piCost, balance: piBalance.toFixed(6), missing: (product.piCost - piBalance).toFixed(6) }));
             return;
         }
 
         if (window.confirm(
-            `Confirmer l'achat?\n\n` +
-            `${product.name}\n` +
-            `${product.description}\n\n` +
-            `Coût: ${product.piCost}π\n` +
-            `Solde après achat: ${(piBalance - product.piCost).toFixed(6)}π`
+            t('shop.confirm_purchase', { 
+                productName: product.name, 
+                productDesc: product.description, 
+                cost: product.piCost, 
+                balance: (piBalance - product.piCost).toFixed(6) 
+            })
         )) {
             onPurchase(product.id, product.piCost, product.energyGain);
             
-            let message = `✅ Achat réussi!\n\n${product.name}`;
+            let extra = "";
             if (product.energyGain > 0) {
-                message += `\n+${product.energyGain}⚡ ajouté`;
+                extra = t('shop.extra_energy', { amount: product.energyGain });
             } else if (product.id.includes('boost')) {
-                message += `\n🚀 Régénération doublée pour 24h`;
+                extra = t('shop.extra_boost');
             } else if (product.unlimited) {
-                message += `\n♾️ Énergie illimitée activée pour 7 jours`;
+                extra = t('shop.extra_unlimited');
             }
             
-            alert(message);
+            alert(t('shop.purchase_success', { productName: product.name, extra }));
             onClose();
         }
     };

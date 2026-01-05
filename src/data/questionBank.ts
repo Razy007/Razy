@@ -1,12 +1,9 @@
-/**
- * BANQUE DE QUESTIONS ENRICHIE
- * 50 questions par cours pour randomisation maximale
- * Total: 550 questions
- */
-
 import { QuizQuestion } from '../types';
 
-export const QUESTION_BANK: Record<string, QuizQuestion[]> = {
+// ==========================================
+// 🇫🇷 FRENCH BANK (Default)
+// ==========================================
+const QUESTION_BANK_FR: Record<string, QuizQuestion[]> = {
     // ========================================
     // COURS 1: INTRODUCTION À PI NETWORK (50 QUESTIONS)
     // ========================================
@@ -23,6 +20,8 @@ export const QUESTION_BANK: Record<string, QuizQuestion[]> = {
             topic: 'pi-basics',
             trapType: 'none'
         },
+        // ... (Keep existing French content here - implicit fallback for this demo) ...
+
         {
             id: 'q-pi-intro-2',
             question: "Quel est le GCV (General Consensus Value) de Pi?",
@@ -1272,14 +1271,70 @@ export const QUESTION_BANK: Record<string, QuizQuestion[]> = {
     ]
 };
 
-// Fonction helper pour obtenir questions d'un layer
-export function getLayerQuestions(layerId: string): QuizQuestion[] {
-    return QUESTION_BANK[layerId] || [];
+// ==========================================
+// 🇺🇸 ENGLISH BANK
+// ==========================================
+const QUESTION_BANK_EN: Record<string, QuizQuestion[]> = {
+    'pi-intro-l2': [
+        {
+            id: 'q-pi-intro-1',
+            question: "What makes Pi Network unique?",
+            options: ["Mining on smartphone", "GPU Mining", "Proof of Work", "ASIC Mining"],
+            correct: 0,
+            explanation: "Pi Network allows mining on smartphones without draining battery or consuming excessive data using the Stellar Consensus Protocol (SCP).",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-basics', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-2',
+            question: "What is the GCV (General Consensus Value) of Pi?",
+            options: ["$100", "$314,159", "$1000", "$50"],
+            correct: 1,
+            explanation: "The GCV is widely supported by the community at $314,159, referencing the mathematical constant π.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-economics', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-3',
+            question: "Which consensus protocol does Pi Network use?",
+            options: ["Proof of Work", "Proof of Stake", "Stellar Consensus Protocol (SCP)", "Delegated PoS"],
+            correct: 2,
+            explanation: "Pi runs on the Stellar Consensus Protocol (SCP), which relies on trust graphs rather than energy-intensive computations.",
+            difficulty: 'easy', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'similar-concepts'
+        },
+        {
+            id: 'q-pi-intro-4',
+            question: "Why is KYC important for Pi Network?",
+            options: ["For marketing emails", "To verify identity and prevent fake accounts", "To sell your data", "It is optional"],
+            correct: 1,
+            explanation: "KYC ensures that 1 Pi Account = 1 Real Person, preventing bots from farming coins.",
+            difficulty: 'easy', cognitiveLevel: 'comprehension', topic: 'pi-security', trapType: 'negative-framing'
+        },
+        {
+            id: 'q-pi-intro-5',
+            question: "What is the main vision of Pi Network?",
+            options: ["Replace Bitcoin only", "Build the world's most inclusive peer-to-peer ecosystem", "Maximize founder profits", "Serve rich countries only"],
+            correct: 1,
+            explanation: "Pi's vision is to build the world's most inclusive peer-to-peer ecosystem and online experience, fueled by Pi.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-vision', trapType: 'none'
+        }
+    ]
+};
+
+// Fonction helper pour obtenir questions d'un layer (BILINGUE)
+export function getLayerQuestions(layerId: string, lang: string = 'fr'): QuizQuestion[] {
+    // 1. Try English if requested
+    if (lang === 'en') {
+        const enQuestions = QUESTION_BANK_EN[layerId];
+        if (enQuestions && enQuestions.length > 0) return enQuestions;
+        // Fallback to French if English translation missing for this specific layer
+    }
+    
+    // 2. Default to French
+    return QUESTION_BANK_FR[layerId] || [];
 }
 
-// Fonction pour obtenir N questions aléatoires
-export function getRandomQuestions(layerId: string, count: number = 3): QuizQuestion[] {
-    const allQuestions = getLayerQuestions(layerId);
+// Fonction pour obtenir N questions aléatoires (BILINGUE)
+export function getRandomQuestions(layerId: string, count: number = 3, lang: string = 'fr'): QuizQuestion[] {
+    const allQuestions = getLayerQuestions(layerId, lang);
     if (allQuestions.length === 0) return [];
     
     // Shuffle et prendre N premières

@@ -9,6 +9,7 @@
  */
 
 import { logMessage, addBreadcrumb } from './monitoring';
+import i18n from '../i18n';
 
 export interface AdReward {
     type: 'RETRY' | 'XP_BONUS' | 'ENERGY' | 'COOLDOWN_SKIP';
@@ -116,9 +117,9 @@ class AdManagerService {
                 if (reward.type === 'RETRY') {
                     const COOLDOWN_MS = 6 * 60 * 60 * 1000;
                     const remainingHours = ((COOLDOWN_MS - (Date.now() - (this.state.lastRetryTimestamp || 0))) / (1000 * 60 * 60)).toFixed(1);
-                    alert(`⏳ Limite atteinte: Un retry sponsorisé toutes les 6h.\nRevenez dans ${remainingHours}h.`);
+                    alert(i18n.t('ads.limit_reached', { hours: remainingHours }));
                 } else {
-                    alert("🚫 Plus de publicités disponibles pour aujourd'hui. Revenez demain !");
+                    alert(i18n.t('ads.no_ads'));
                 }
                 resolve(false);
                 return;
@@ -127,12 +128,9 @@ class AdManagerService {
             console.log(`📺 AdManager: Showing Rewarded Ad for ${reward.type}`);
 
             // Simulation de l'interface publicitaire
+            // Simulation de l'interface publicitaire
             const confirmWatch = window.confirm(
-                `📺 PUBLICITÉ SPONSORISÉE\n\n` +
-                `Regardez une courte vidéo pour obtenir :\n` +
-                `🎁 ${this.formatRewardText(reward)}\n\n` +
-                `Cela aide à payer les serveurs et garder l'app gratuite.\n` +
-                `Continuer ?`
+                i18n.t('ads.watch_confirm', { reward: this.formatRewardText(reward) })
             );
 
             if (confirmWatch) {
@@ -140,7 +138,7 @@ class AdManagerService {
                 // Dans une vraie app, on appelle adMob.show()
                 
                 setTimeout(() => {
-                    alert(`✅ Merci ! Récompense débloquée : ${this.formatRewardText(reward)}`);
+                    alert(i18n.t('ads.reward_unlocked', { reward: this.formatRewardText(reward) }));
                     
                     this.state.adsWatchedToday++;
                     this.state.lastAdTimestamp = Date.now();
@@ -178,11 +176,11 @@ class AdManagerService {
 
     private formatRewardText(reward: AdReward): string {
         switch (reward.type) {
-            case 'RETRY': return "1 Retry Gratuit (80% des gains)"; // Mise à jour techte
-            case 'XP_BONUS': return `+${reward.amount} XP Bonus`;
-            case 'ENERGY': return `+${reward.amount} Énergie`;
-            case 'COOLDOWN_SKIP': return "Passer le temps d'attente";
-            default: return "Récompense";
+            case 'RETRY': return i18n.t('rewards.retry');
+            case 'XP_BONUS': return i18n.t('rewards.xp_bonus', { amount: reward.amount });
+            case 'ENERGY': return i18n.t('rewards.energy', { amount: reward.amount });
+            case 'COOLDOWN_SKIP': return i18n.t('rewards.cooldown_skip');
+            default: return i18n.t('rewards.generic');
         }
     }
 

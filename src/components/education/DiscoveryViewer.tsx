@@ -13,6 +13,7 @@ export interface DiscoveryContent {
 }
 
 interface DiscoveryViewerProps {
+    content?: DiscoveryContent; // 🌍 Localized content passed from parent
     layer: {
         id: string;
         title: string;
@@ -25,13 +26,13 @@ interface DiscoveryViewerProps {
     onClose: () => void;
 }
 
-export const DiscoveryViewer: React.FC<DiscoveryViewerProps> = ({ layer, onComplete, onClose }) => {
+export const DiscoveryViewer: React.FC<DiscoveryViewerProps> = ({ content: contentProp, layer, onComplete, onClose }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [hasStarted, setHasStarted] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
 
-    // Default content structure if not provided
-    const content: DiscoveryContent = layer.discoveryContent || {
+    // Prioritize passed contentProp (localized), then layer.discoveryContent, then fallback
+    const content: DiscoveryContent = contentProp || layer.discoveryContent || {
         type: 'article',
         title: layer.title,
         description: layer.description,

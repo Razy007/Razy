@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import LoginScreen from './components/LoginScreen';
-import { Trophy, Book, Users, Star, Zap, Award, ChevronRight, Target, Brain, Shield, Gift, Flame, CheckCircle, Globe, Copy, Lock, Crown, Share2, TrendingUp, DollarSign, Calendar, Percent, AlertCircle, X, Trash2 } from 'lucide-react';
+import { Trophy, Book, Users, Star, Zap, Award, ChevronRight, Target, Brain, Shield, Gift, Flame, CheckCircle, Globe, Copy, Lock, Crown, Share2, TrendingUp, DollarSign, Calendar, Percent, AlertCircle, X, Trash2, Wallet } from 'lucide-react';
 import { saveUserProfile, getUserProfile } from './services/firebase';
 import { COURSES } from './data/courses';
 import { EnergySystem } from './services/edu/EnergySystem';
@@ -28,10 +28,14 @@ import { CooldownManager } from './services/CooldownManager';
 import { QuizResults } from './components/education/QuizResults';
 import RetrySystem, { RetryHistory } from './services/RetrySystem';
 import { ReferralDashboard } from './components/referral/ReferralDashboard';
-import { ReferralTest } from './components/referral/ReferralTest';
 import { PiWalletLink } from './components/referral/PiWalletLink';
 import { AdManager } from './services/AdManager'; // 📺 AdManager
 import { logMessage, logEvent } from './services/monitoring'; // 📊 Monitoring
+
+// i18n Imports
+import { useTranslation } from 'react-i18next';
+import './i18n'; // Initialize i18n config
+import { getCourses } from './data/courses'; // New dynamic loader
 
 // Translations
 const translations = {
@@ -102,6 +106,9 @@ const calculateLevelFromXP = (totalXP: number): { level: number; xpToNext: numbe
 };
 
 const App = () => {
+  // 🌍 i18n Hook - MUST BE FIRST to avoid ReferenceError
+  const { t, i18n } = useTranslation();
+
   const [user, setUser] = useState<any>(null);
   // Auth States: 'initial' | 'loading' | 'pioneer' | 'guest'
   const [authStatus, setAuthStatus] = useState<string>('initial');
@@ -110,7 +117,12 @@ const App = () => {
   const [loading, setLoading] = useState(false); // Used for async ops within screens 
   const [authError, setAuthError] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('courses');
-  const [language, setLanguage] = useState('fr');
+  const [language, setLanguage] = useState(i18n.language?.startsWith('en') ? 'en' : 'fr'); // Sync with i18n detection
+  const toggleLanguage = () => {
+    const newLang = language === 'fr' ? 'en' : 'fr';
+    setLanguage(newLang);
+    i18n.changeLanguage(newLang); // Switch i18n instance
+  };
   const [showProfile, setShowProfile] = useState(false);
   const [showWallet, setShowWallet] = useState(false);
   const [showStaking, setShowStaking] = useState(false);
@@ -140,36 +152,42 @@ const App = () => {
   const [hasWatchedAdForRetry, setHasWatchedAdForRetry] = useState(false); // 📺 Track if user watched ad for retry
   const [quizSponsoredByAd, setQuizSponsoredByAd] = useState(false); // 📺 Track if CURRENT quiz session is sponsored by ad
 
-  const t = (translations as any)[language];
+
 
   const [selectedLayer, setSelectedLayer] = useState<Layer | null>(null);
 
   const [userProgress, setUserProgress] = useState<any>({
-    level: 3,
-    xp: 250,
-    xpToNext: 50,
-    streak: 5,
-    piBalance: 0.0125,
+    level: 1,
+    xp: 0,
+    xpToNext: 100,
+    streak: 0,
+    piBalance: 0.0000,
     completedCourses: [],
-    completedLayers: {}, // { courseId: [] }
-    layerMastery: {}, // { layerId: 0-100 }
+    completedLayers: {}, 
+    layerMastery: {}, 
     questionHistory: {},
     energy: EnergySystem.getInitialState(),
     reputation: { total: 100, constancy: 0, progression: 0, precision: 0 },
-    totalPoints: 250,
+    totalPoints: 0,
     referralCode: 'PIA' + Math.random().toString(36).substring(2, 8).toUpperCase(),
     lastLoginDate: null,
     stakingBalance: 0,
     stakingRewards: 0,
     stakingStartDate: null,
     stakingPeriod: null,
-    retryHistory: {} as RetryHistory // 🔁 Track retry attempts per layer
+    retryHistory: {} as RetryHistory,
+    dailyPostCount: 0, 
+    lastPostDate: null
   });
 
-  // Use the constant COURSES instead of state
-  const courses = COURSES;
+  // 📚 Course State (Dynamic based on language)
+  const [courses, setCourses] = useState<any[]>([]);
 
-
+  // Effect: Update courses when language changes
+  useEffect(() => {
+     const loadedCourses = getCourses(language);
+     setCourses(loadedCourses);
+  }, [language]); // Re-run whenever language toggle changes
 
 
 
@@ -298,7 +316,7 @@ const App = () => {
         question: "Comment identifier un faux compte 'Pi Support' sur les réseaux sociaux?",
         options: ["Il a le logo Pi", "Il vous contacte en premier par DM pour 'aider'", "Il publie des news", "Il a beaucoup d'abonnés"],
         correct: 1,
-        explanation: "Le support officiel de Pi ne vous contactera JAMAIS en premier par message privé (DM) pour résoudre un problème de compte."
+        explanation: `Le ${t('profile.support')} officiel de Pi ne vous contactera JAMAIS en premier par message privé (DM) pour résoudre un problème de compte.`
       }
     ]
   };
@@ -453,6 +471,10 @@ const App = () => {
     }
   }, [user]);
 
+  // 🔒 Lock Body Scroll when any modal is open (Fix Mobile Scroll Issues)
+  // 🔓 OPTIMIZATION: Removed aggressive Body Scroll Lock which caused UI jumps on mobile devices.
+  // Instead, we rely on the modal's z-index and overlay to handle scrolling natively.
+
   const saveData = async () => {
     if (user) {
       await saveUserProfile(user.uid, {
@@ -540,11 +562,20 @@ const App = () => {
       return;
     }
 
+    const today = new Date().toDateString();
+    
+    // Check Daily Limit for XP
+    if (userProgress.lastPostDate !== today) {
+        // New day, reset count
+        setUserProgress((prev: any) => ({ ...prev, dailyPostCount: 0, lastPostDate: today }));
+    }
+
     const newPost = {
       id: Date.now(),
       userId: user?.uid, // Track post owner
       user: user?.username,
       avatar: user?.avatar,
+      profilePicture: profilePicture, // 📸 Save real profile picture!
       time: 'À l\'instant',
       content: postContent,
       likes: 0,
@@ -553,14 +584,28 @@ const App = () => {
     };
 
     setSocialPosts([newPost, ...socialPosts]);
-    // 🐛 FIX: Recalculer le niveau quand on gagne des XP
-    setUserProgress((prev: any) => {
-      const newXP = prev.xp + 10;
-      const { level, xpToNext } = calculateLevelFromXP(newXP);
-      return { ...prev, xp: newXP, level, xpToNext, totalPoints: prev.totalPoints + 10 };
-    });
+    
+    // 🐛 FIX: XP Limit (Max 3 posts/day)
+    if ((userProgress.dailyPostCount || 0) < 3) {
+        setUserProgress((prev: any) => {
+          const newXP = prev.xp + 10;
+          const { level, xpToNext } = calculateLevelFromXP(newXP);
+          return { 
+              ...prev, 
+              xp: newXP, 
+              level, 
+              xpToNext, 
+              totalPoints: prev.totalPoints + 10,
+              dailyPostCount: (prev.dailyPostCount || 0) + 1,
+              lastPostDate: today
+          };
+        });
+        alert('✅ Publication partagée!\n+10 XP gagné (Quota: ' + ((userProgress.dailyPostCount || 0) + 1) + '/3)');
+    } else {
+        alert('✅ Publication partagée!\n(Quota XP journalier atteint)');
+    }
+    
     setPostContent('');
-    alert('✅ Publication partagée!\n+10 XP gagné');
   };
 
   const handleAddComment = (postId: string, content: string, parentId: string | null) => {
@@ -570,6 +615,7 @@ const App = () => {
       userId: user?.uid || '',
       username: user?.username || 'Anonymous',
       avatar: user?.avatar || '👤',
+      // Store profile pic in comment if needed (requires updating Comment interface, for now consistent with avatar)
       content: content,
       timestamp: Date.now(),
       likes: 0,
@@ -947,7 +993,7 @@ const App = () => {
     
     // Afficher message explicatif
     const confirmRetry = window.confirm(
-      `🔁 RÉESSAYER LE QUIZ\n\n${retryInfo.message}\n\n${retryInfo.canRetry ? 'Continuer?' : ''}`
+      `🔁 RÉESSAYER LE QUIZ\n\n${retryInfo.message}\n\n${retryInfo.canRetry ? t('course.continue') + 'r?' : ''}`
     );
     
     if (!confirmRetry || !retryInfo.canRetry) {
@@ -1030,7 +1076,7 @@ const App = () => {
     if (!selectedOption) return;
     
     // Calculate rewards based on decision quality
-    const xpReward = selectedOption.impact.xp || selectedLayer.xpReward;
+    const xpReward = selectedOption.impact('stats.xp') || selectedLayer.xpReward;
     const repReward = selectedOption.impact.reputation || 0;
     const piReward = selectedOption.impact.pi || 0;
     
@@ -1151,6 +1197,7 @@ const App = () => {
   if (showDiscovery && selectedLayer) {
       return (
           <DiscoveryViewer
+            content={enrichDiscoveryLayer(selectedLayer.id, language)}
             layer={selectedLayer}
             onComplete={handleDiscoveryComplete}
             onClose={() => {
@@ -1266,7 +1313,7 @@ const App = () => {
               className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400"
             />
             <div>
-              <h1 className="text-white font-bold text-lg">Pioneer Academy</h1>
+              <h1 className="text-white font-bold text-base md:text-lg">Academy of Pi</h1>
               <p className="text-yellow-400 text-xs">Learn • Earn • Grow</p>
             </div>
           </div>
@@ -1288,27 +1335,11 @@ const App = () => {
               />
             )}
 
-            <div className="relative group">
-              <button className="bg-white/10 p-2 rounded-lg hover:bg-white/20">
-                <Globe size={20} className="text-white" />
-              </button>
-              <div className="absolute right-0 mt-2 bg-black/95 rounded-xl p-2 hidden group-hover:block min-w-[140px] z-40 border border-white/20">
-                {[
-                  { code: 'en', name: 'English', flag: '🇬🇧' },
-                  { code: 'fr', name: 'Français', flag: '🇫🇷' }
-                ].map(lang => (
-                  <button
-                    key={lang.code}
-                    onClick={() => setLanguage(lang.code)}
-                    className={`w-full text-left px-3 py-2 rounded hover:bg-white/10 flex items-center gap-2 ${language === lang.code ? 'bg-yellow-400/20 text-yellow-400' : 'text-white'
-                      }`}
-                  >
-                    <span>{lang.flag}</span>
-                    <span className="text-sm">{lang.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+
+              
+              {/* 🌍 Language Toggle (Simplified & Functional) */}
+
+
 
             <button
               onClick={() => setShowProfile(true)}
@@ -1325,7 +1356,7 @@ const App = () => {
               )}
               <div className="text-left hidden md:block">
                 <p className="text-white font-semibold text-sm">{user?.username}</p>
-                <p className="text-yellow-400 text-xs">{isPremium ? '👑 Premium' : t.freeTier}</p>
+                <p className="text-yellow-400 text-xs">{isPremium ? '👑 Premium' : t('freeTier')}</p>
               </div>
             </button>
             
@@ -1344,69 +1375,57 @@ const App = () => {
       {showProfile && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={() => setShowProfile(false)}>
           <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            
+            {/* Header */}
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-white text-2xl font-bold">{t.profile}</h3>
+              <h3 className="text-white text-2xl font-bold">{t('profile.title')}</h3>
               <button onClick={() => setShowProfile(false)} className="text-white"><X size={24} /></button>
             </div>
 
             <div className="text-center mb-6 mt-6">
-              {/* Profile Picture with Upload */}
+              {/* Profile Picture */}
               <div className="relative inline-block mb-4">
                 {profilePicture ? (
-                  <img
-                    src={profilePicture}
-                    alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-yellow-400"
-                  />
+                  <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-yellow-400" />
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-4 border-yellow-400 overflow-hidden shadow-lg shadow-purple-500/30">
                     <span className="text-7xl leading-none select-none filter drop-shadow-md pb-2">{user?.avatar}</span>
                   </div>
                 )}
-
+                
                 {/* Upload Button */}
                 <label className="absolute bottom-0 right-0 bg-yellow-400 hover:bg-yellow-500 text-black rounded-full p-2 cursor-pointer transition shadow-lg">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleProfilePictureUpload}
-                    className="hidden"
-                  />
+                  <input type="file" accept="image/*" onChange={handleProfilePictureUpload} className="hidden" />
                   <span className="text-lg">📷</span>
                 </label>
 
-                {/* Remove Picture Button - Now an icon */}
+                {/* Remove Picture Button */}
                 {profilePicture && (
-                  <button
-                    onClick={removeProfilePicture}
-                    className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 cursor-pointer transition shadow-lg"
-                    title="Supprimer la photo"
-                  >
+                  <button onClick={removeProfilePicture} className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 cursor-pointer transition shadow-lg" title="Supprimer la photo">
                     <Trash2 size={16} />
                   </button>
                 )}
               </div>
 
               <h3 className="text-white text-2xl font-bold">{user?.username}</h3>
-
+              
               <div className="bg-white/10 rounded-lg p-3 mt-3">
                 <p className="text-purple-300 text-xs mb-1">User ID</p>
                 <div className="flex items-center justify-center gap-2">
                   <p className="text-yellow-400 font-mono font-bold text-sm">{user?.uid}</p>
-                  <button onClick={() => copyToClipboard(user?.uid)} className="text-white hover:text-yellow-400">
-                    <Copy size={16} />
-                  </button>
+                  <button onClick={() => copyToClipboard(user?.uid)} className="text-white hover:text-yellow-400"><Copy size={16} /></button>
                 </div>
               </div>
             </div>
 
+            {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-purple-300 text-xs">{t.level}</p>
+                <p className="text-purple-300 text-xs">{t('stats.level')}</p>
                 <p className="text-white text-2xl font-bold">{userProgress.level}</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-purple-300 text-xs">{t.streak}</p>
+                <p className="text-purple-300 text-xs">{t.streak || 'Streak'}</p>
                 <p className="text-white text-2xl font-bold">{userProgress.streak}</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
@@ -1414,57 +1433,86 @@ const App = () => {
                 <p className="text-white text-2xl font-bold">{userProgress.completedCourses.length}</p>
               </div>
             </div>
-            <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-xl p-4 mb-4 border border-green-400/30">
-              <p className="text-green-400 font-semibold mb-2 flex items-center gap-2">
-                <Share2 size={16} />
-                Code de Parrainage
-              </p>
-              <div className="flex items-center gap-2">
-                <p className="text-white font-mono font-bold text-lg flex-1">{userProgress.referralCode}</p>
-                <button
-                  onClick={() => copyToClipboard(userProgress.referralCode)}
-                  className="bg-green-400 text-black px-3 py-1 rounded-lg font-bold"
-                >
-                  <Copy size={16} />
+
+            {/* ⚙️ Settings / Language Switch */}
+            <div className="mb-6 border-t border-b border-white/10 py-4">
+                <h4 className="text-white/70 text-sm font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
+                  <Globe size={14} />
+                  {t('profile.settings') || 'Settings'}
+                </h4>
+                
+                <button onClick={toggleLanguage} className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-between group">
+                  <span className="flex items-center gap-3">
+                    <span className="text-2xl">{language === 'fr' ? '🇫🇷' : '🇺🇸'}</span>
+                    <span className="group-hover:text-yellow-400 transition-colors">{t('profile.language') || 'Language'}</span>
+                  </span>
+                  <span className="text-white/50 text-sm flex items-center gap-1 group-hover:text-white transition-colors">
+                    {language === 'fr' ? 'Français' : 'English'} <ChevronRight size={16} />
+                  </span>
                 </button>
-              </div>
+            </div>
+
+            <div className="space-y-3">
+                {/* XP Card */}
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex items-center justify-between">
+                <div className="bg-purple-500/20 p-2.5 rounded-xl"><Zap className="text-purple-400" size={24} /></div>
+                <div className="flex flex-col items-end">
+                    <span className="text-white/60 text-xs uppercase tracking-wider">{t('stats.xp')}</span>
+                    <span className="text-2xl font-bold text-white leading-none">{userProgress.xp}</span>
+                </div>
+                </div>
+
+                {/* Balance Card */}
+                <div onClick={() => setShowWallet(true)} className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-md rounded-2xl p-4 border border-orange-500/20 flex items-center justify-between cursor-pointer hover:border-orange-500/40 transition-colors">
+                <div className="bg-orange-500/20 p-2.5 rounded-xl"><Wallet className="text-orange-400" size={24} /></div>
+                <div className="flex flex-col items-end">
+                    <span className="text-white/60 text-xs uppercase tracking-wider">{t('stats.balance')}</span>
+                    <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-bold text-orange-400 leading-none">{userProgress.piBalance.toFixed(4)}</span>
+                    <span className="text-orange-400 font-bold text-xs">π</span>
+                    </div>
+                </div>
+                </div>
+
+                {/* Rank Card */}
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 flex items-center justify-between">
+                <div className="bg-blue-500/20 p-2.5 rounded-xl"><Target className="text-blue-400" size={24} /></div>
+                <div className="flex flex-col items-end">
+                    <span className="text-white/60 text-xs uppercase tracking-wider">{t('stats.rank')}</span>
+                    <span className="text-xl font-bold text-white leading-none">#{userProgress.rank || 'N/A'}</span>
+                </div>
+                </div>
+                
+                {/* Referral */}
+                <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-xl p-4 border border-green-400/30">
+                <p className="text-green-400 font-semibold mb-2 flex items-center gap-2"><Share2 size={16} /> Code de Parrainage</p>
+                <div className="flex items-center gap-2">
+                    <p className="text-white font-mono font-bold text-lg flex-1">{userProgress.referralCode}</p>
+                    <button onClick={() => copyToClipboard(userProgress.referralCode)} className="bg-green-400 text-black px-3 py-1 rounded-lg font-bold"><Copy size={16} /></button>
+                </div>
+                </div>
             </div>
 
             {/* 🔄 Progression Sync */}
-            <div className="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 mb-6 text-center">
-              <p className="text-blue-400 font-bold mb-2 text-sm flex items-center justify-center gap-2">
-                <Target size={16} />
-                Synchronisation de Progression
-              </p>
-              <p className="text-gray-300 text-xs mb-3">
-                Si des cours restent verrouillés malgré votre niveau élevé, utilisez cet outil.
-              </p>
-              <button
-                onClick={() => {
+            <div className="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 mt-6 text-center">
+              <p className="text-blue-400 font-bold mb-2 text-sm flex items-center justify-center gap-2"><Target size={16} /> Synchronisation de Progression</p>
+              <p className="text-gray-300 text-xs mb-3">Si des cours restent verrouillés malgré votre niveau élevé, utilisez cet outil.</p>
+              <button onClick={() => {
                   const coursesToMark = [];
-                  
-                  // Marquer automatiquement les cours de base si niveau suffisant
                   if (userProgress.level >= 2 && userProgress.xp >= 100) coursesToMark.push('pi-intro-101');
                   if (userProgress.level >= 3 && userProgress.xp >= 300) coursesToMark.push('pi-wallet-101');
                   if (userProgress.level >= 4 && userProgress.xp >= 500) coursesToMark.push('safety-101');
                   if (userProgress.level >= 5 && userProgress.xp >= 800) coursesToMark.push('kyc-101');
-                  
                   const newCompletions = coursesToMark.filter(id => !userProgress.completedCourses.includes(id));
-                  
                   if (newCompletions.length > 0) {
-                    setUserProgress((prev: any) => ({
-                      ...prev,
-                      completedCourses: [...new Set([...prev.completedCourses, ...newCompletions])]
-                    }));
-                    alert(`✅ Synchronisation réussie!\n\n${newCompletions.length} cours marqués comme complétés.\n\nRafraîchissez la page des cours!`);
+                    setUserProgress((prev: any) => ({ ...prev, completedCourses: [...prev.completedCourses, ...newCompletions] }));
+                    alert(`✅ Synchronisation réussie!\n${newCompletions.length} cours déverrouillés.`);
                   } else {
-                    alert('✅ Progression déjà à jour!');
+                    alert('Votre progression est déjà à jour.');
                   }
                 }}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2"
-              >
-                <Target size={16} />
-                Synchroniser Maintenant
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2">
+                <Target size={16} /> Synchroniser Maintenant
               </button>
             </div>
 
@@ -1478,7 +1526,7 @@ const App = () => {
           <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-2xl p-8 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-6">
               <Crown size={64} className="text-yellow-400 mx-auto mb-4" />
-              <h3 className="text-white text-3xl font-bold mb-2">{t.upgradePremium}</h3>
+              <h3 className="text-white text-3xl font-bold mb-2">{t('upgradePremium')}</h3>
               <p className="text-white/90">Débloquez TOUS les avantages exclusifs</p>
             </div>
 
@@ -1514,7 +1562,7 @@ const App = () => {
                   <p className="text-white/80 text-sm">≈ ${(0.01 * PI_GCV).toFixed(2)} USD</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-semibold">par {t.month}</p>
+                  <p className="text-white font-semibold">par {t('month')}</p>
                 </div>
               </div>
             </div>
@@ -1523,7 +1571,7 @@ const App = () => {
               onClick={handlePremiumUpgrade}
               className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-4 rounded-xl text-lg hover:scale-105 transition mb-3"
             >
-              {t.subscribe}
+              {t('subscribe')}
             </button>
 
             <button
@@ -1541,7 +1589,7 @@ const App = () => {
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={() => setShowStaking(false)}>
           <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-2xl font-bold">💎 {t.stakingTitle}</h3>
+              <h3 className="text-white text-2xl font-bold">💎 {t('stakingTitle')}</h3>
               <button onClick={() => setShowStaking(false)} className="text-white"><X size={24} /></button>
             </div>
 
@@ -1588,7 +1636,7 @@ const App = () => {
                   onClick={handleUnstake}
                   className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-4 rounded-xl hover:scale-105 transition"
                 >
-                  🔓 {t.unstake}
+                  🔓 {t('unstake')}
                 </button>
               </div>
             ) : (
@@ -1743,34 +1791,35 @@ const App = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-4 pb-24">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <div className="bg-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/15" onClick={() => setShowWallet(true)}>
-            <p className="text-purple-300 text-xs mb-1">{t.balance}</p>
-            <p className="text-white text-xl font-bold">{userProgress.piBalance.toFixed(4)}π</p>
-            <p className="text-green-400 text-xs">≈ ${(userProgress.piBalance * PI_GCV).toFixed(2)}</p>
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          <div className="bg-white/10 rounded-xl p-3 md:p-4 cursor-pointer hover:bg-white/15" onClick={() => setShowWallet(true)}>
+            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t('stats.balance')}</p>
+            <p className="text-white text-lg md:text-xl font-bold truncate">{userProgress.piBalance.toFixed(4)}π</p>
+            <p className="text-green-400 text-[10px] md:text-xs truncate">≈ ${(userProgress.piBalance * PI_GCV).toFixed(2)}</p>
           </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <p className="text-purple-300 text-xs mb-1">{t.level}</p>
-            <p className="text-white text-xl font-bold">{userProgress.level}</p>
-            {isPremium && <span className="text-yellow-400 text-xs">👑 Premium</span>}
+          <div className="bg-white/10 rounded-xl p-3 md:p-4">
+            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t('stats.level')}</p>
+            <p className="text-white text-lg md:text-xl font-bold">{userProgress.level}</p>
+            {isPremium && <span className="text-yellow-400 text-[10px] md:text-xs">👑 Premium</span>}
           </div>
-          <div className="bg-white/10 rounded-xl p-4">
-            <p className="text-purple-300 text-xs mb-1">{t.streak}</p>
-            <p className="text-white text-xl font-bold flex items-center gap-1">
-              <Flame size={20} className="text-orange-400" />
+          <div className="bg-white/10 rounded-xl p-3 md:p-4">
+            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t.streak}</p>
+            <p className="text-white text-lg md:text-xl font-bold flex items-center gap-1">
+              <Flame size={16} className="text-orange-400 md:w-5 md:h-5" />
               {userProgress.streak}
             </p>
           </div>
-          <div className="bg-white/10 rounded-xl p-4 cursor-pointer hover:bg-white/15" onClick={() => {
+          <div className="bg-white/10 rounded-xl p-3 md:p-4 cursor-pointer hover:bg-white/15" onClick={() => {
             if (kycStatus !== 'verified') {
               alert("⚠️ Staking réservé aux Pioneers vérifiés (KYC).");
               return;
             }
             setShowStaking(true);
           }}>
-            <p className="text-purple-300 text-xs mb-1">{t.staking}</p>
-            <p className="text-yellow-400 text-xl font-bold">{userProgress.stakingBalance.toFixed(4)}π</p>
-            <p className="text-green-400 text-xs">+{userProgress.stakingRewards.toFixed(6)}π</p>
+            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t.staking}</p>
+            <p className="text-yellow-400 text-lg md:text-xl font-bold truncate">{userProgress.stakingBalance.toFixed(4)}π</p>
+            <p className="text-green-400 text-[10px] md:text-xs truncate">+{userProgress.stakingRewards.toFixed(6)}π</p>
           </div>
         </div>
 
@@ -1934,12 +1983,18 @@ const App = () => {
                 { id: 103, user: 'WebThreeWizard', avatar: '🧙', time: '1j', content: 'Niveau 10 atteint! Merci Pioneer Academy 🎉', likes: 42, comments: [] }
                 ].map((post: any) => (
                   <div key={post.id} className="bg-black/30 rounded-lg p-4">
-                    <div className="flex items-start gap-3 mb-2">
-                      <div className="text-3xl">{post.avatar}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-white font-bold">{post.user}</p>
+                        <div className="flex items-start gap-3 mb-2">
+                          {/* 📸 Smart Avatar: Real Pic > Emoji */}
+                          {post.profilePicture ? (
+                             <img src={post.profilePicture} className="w-10 h-10 rounded-full object-cover border border-white/20" alt="Avatar" />
+                          ) : (
+                             <div className="text-3xl">{post.avatar}</div>
+                          )}
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-white font-bold">{post.user}</p>
                             <p className="text-purple-300 text-xs">Il y a {post.time}</p>
                           </div>
                           {/* Delete button - only for post owner */}
@@ -2077,7 +2132,7 @@ const App = () => {
                   <button
                     onClick={() => {
                       if (kycStatus !== 'verified') {
-                        alert("⚠️ Accès refusé : Vérification KYC requise pour les achats.");
+                        alert(`⚠️ Accès refusé : ${t('profile.notifications')} KYC requise pour les achats.`);
                         return;
                       }
                       if (userProgress.piBalance >= item.cost) {
@@ -2168,10 +2223,10 @@ const App = () => {
       <div className="fixed bottom-0 left-0 right-0 bg-black/40 backdrop-blur-xl border-t border-white/10 z-20">
         <div className="max-w-7xl mx-auto flex justify-around p-3">
           {[
-            { id: 'courses', icon: Book, label: t.courses },
-            { id: 'leaderboard', icon: Trophy, label: t.leaderboard },
-            { id: 'social', icon: Users, label: t.social },
-            { id: 'shop', icon: Gift, label: t.shop }
+            { id: 'courses', icon: Book, label: t('nav.courses') },
+            { id: 'leaderboard', icon: Trophy, label: t('nav.leaderboard') },
+            { id: 'social', icon: Users, label: t('nav.social') },
+            { id: 'shop', icon: Gift, label: t('nav.shop') }
           ].map((tab) => (
             <button
               key={tab.id}

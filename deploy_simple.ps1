@@ -10,9 +10,13 @@ $remoteDir = "/var/www/pioneer-academy"
 # 2. Cleanup
 if (Test-Path $zipFile) { Remove-Item $zipFile }
 
-# 3. Zip
-Write-Host "Compressing..."
-Compress-Archive -Path "$sourceDir\*" -DestinationPath $zipFile -CompressionLevel Fastest -Force
+# 3. Build & Zip
+Write-Host "Building project..."
+& npm run build
+if ($LASTEXITCODE -ne 0) { throw "Build failed" }
+
+Write-Host "Compressing dist folder..."
+Compress-Archive -Path "$sourceDir\dist\*" -DestinationPath $zipFile -CompressionLevel Fastest -Force
 
 # 4. SCP
 Write-Host "Sending to $serverIp..."
@@ -23,7 +27,7 @@ if ($LASTEXITCODE -eq 0) {
     
     # 5. Unzip
     Write-Host "Unzipping..."
-    $sshCmd = "rm -rf $remoteDir/*; unzip -o /tmp/deploy_package.zip -d $remoteDir; rm /tmp/deploy_package.zip"
+    $sshCmd = "rm -rf $remoteDir/assets $remoteDir/index.html $remoteDir/vite.svg; unzip -o /tmp/deploy_package.zip -d $remoteDir; rm /tmp/deploy_package.zip"
     & ssh -i "$keyPath" "${remoteUser}@${serverIp}" $sshCmd
     
     Write-Host "DEPLOYMENT COMPLETE!"

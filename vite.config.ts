@@ -33,10 +33,9 @@ export default defineConfig(({ mode }) => {
 
         // Build configuration
         build: {
-            compress: {
-                drop_console: true,
-                drop_debugger: true
-            }
+            minify: true,
+            sourcemap: false,
+            target: 'esnext'
         }
     }
 })

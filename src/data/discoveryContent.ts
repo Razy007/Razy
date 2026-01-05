@@ -8,25 +8,54 @@ import { DiscoveryContent } from '../components/education/DiscoveryViewer';
 export const ENRICHED_DISCOVERY_CONTENT: Record<string, DiscoveryContent> = {
     'pi-intro-l1': {
         type: 'video',
-        title: 'La Révolution Pi Network',
-        description: 'Découvrez comment Pi Network démocratise la cryptomonnaie',
+        title: {
+            fr: 'La Révolution Pi Network',
+            en: 'The Pi Network Revolution'
+        },
+        description: {
+            fr: 'Découvrez comment Pi Network démocratise la cryptomonnaie',
+            en: 'Discover how Pi Network democratizes cryptocurrency'
+        },
         duration: '5 min',
-        visualUrl: 'https://www.youtube.com/embed/UhC7hi7PZSE', // Official Pi Network intro video
-        content: `Pi Network représente une révolution dans le monde de la crypto. Pour la première fois, n'importe qui peut miner directement depuis son smartphone, sans équipement coûteux ni consommation excessive de batterie.
+        visualUrl: 'https://www.youtube.com/embed/UhC7hi7PZSE',
+        content: {
+            fr: `### La Révolution Pi Network
 
-**Ce qui rend Pi unique:**
+Pi Network est la première cryptomonnaie que vous pouvez miner sur votre téléphone.
 
-La technologie derrière Pi utilise le Stellar Consensus Protocol (SCP), un algorithme de consensus qui ne nécessite pas la puissance de calcul intensive du Proof of Work traditionnel. Cela signifie que votre téléphone peut participer au réseau sans se décharger en quelques heures!
+**Points Clés:**
+- 🌍 **Accessible**: Pas besoin de matériel coûteux
+- 🔋 **Économe**: Ne consomme pas votre batterie
+- 👥 **Social**: Construit sur la confiance communautaire
+- 🔒 **Sécurisé**: Utilise le Stellar Consensus Protocol (SCP)
 
-**L'écosystème en croissance:**
+**Vision:** Créer la crypto la plus accessible au monde.`,
+            en: `### The Pi Network Revolution
 
-Avec plus de 50 millions de pionniers à travers le monde, Pi Network construit une véritable économie peer-to-peer. Des développeurs créent des applications (dApps) qui utilisent Pi comme moyen de paiement, créant ainsi un écosystème vivant et en constante évolution.`,
-        highlights: [
-            'Comprendre le minage mobile et son fonctionnement',
-            'Découvrir le Stellar Consensus Protocol (SCP)',
-            'Explorer l\'écosystème dApps de Pi',
-            'Visualiser la croissance de la communauté mondiale'
-        ]
+Pi Network is the first digital currency you can mine on your phone.
+
+**Key Highlights:**
+- 🌍 **Accessible**: No expensive hardware required
+- 🔋 **Eco-Friendly**: Does not drain your battery
+- 👥 **Social**: Built on community trust
+- 🔒 **Secure**: Powered by the Stellar Consensus Protocol (SCP)
+
+**Vision:** To build the world's most inclusive peer-to-peer ecosystem.`
+        },
+        highlights: {
+            fr: [
+                'Comprendre le minage mobile et son fonctionnement',
+                'Découvrir le Stellar Consensus Protocol (SCP)',
+                'Explorer l\'écosystème dApps de Pi',
+                'Visualiser la croissance de la communauté mondiale'
+            ],
+            en: [
+                'Understand mobile mining and how it works',
+                'Discover the Stellar Consensus Protocol (SCP)',
+                'Explore the Pi dApp ecosystem',
+                'Visualize the growth of the global community'
+            ]
+        }
     },
 
     'wallet-l1-discovery': {
@@ -277,6 +306,23 @@ L'écosystème Pi développe ses propres protocoles DeFi. Bientôt, vous pourrez
 };
 
 // Fonction helper pour enrichir un layer avec du contenu
-export function enrichDiscoveryLayer(layerId: string) {
-    return ENRICHED_DISCOVERY_CONTENT[layerId] || null;
+// Fonction helper pour enrichir un layer avec du contenu LOCALISÉ
+export function enrichDiscoveryLayer(layerId: string, lang: string = 'fr'): any {
+    const data = ENRICHED_DISCOVERY_CONTENT[layerId];
+    if (!data) return null;
+
+    // Helper pour extraire la bonne langue ou fallback FR
+    const t = (field: any) => {
+        if (typeof field === 'string') return field; // Pas encore traduit (legacy)
+        if (lang === 'en' && field.en) return field.en;
+        return field.fr || field;
+    };
+
+    return {
+        ...data,
+        title: t(data.title),
+        description: t(data.description),
+        content: t(data.content),
+        highlights: t(data.highlights)
+    };
 }

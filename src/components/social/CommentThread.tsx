@@ -177,28 +177,30 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
 
                     {/* Reply Input */}
                     {replyingTo === comment.id && (
-                        <div className="mt-3 ml-11 flex gap-2">
-                            <input
-                                type="text"
-                                value={replyContent}
-                                onChange={(e) => setReplyContent(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSubmitReply(comment.id)}
-                                placeholder={`Répondre à ${comment.username}...`}
-                                className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/40 focus:outline-none focus:border-blue-400"
-                                autoFocus
-                            />
-                            <button
-                                onClick={() => handleSubmitReply(comment.id)}
-                                className="bg-blue-500 hover:bg-blue-600 p-2 rounded-lg transition"
-                            >
-                                <Send size={16} className="text-white" />
-                            </button>
+                        <div className="mt-3 ml-11 flex flex-col gap-2 animate-fadeIn relative z-10">
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={replyContent}
+                                    onChange={(e) => setReplyContent(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSubmitReply(comment.id)}
+                                    placeholder={`Répondre à ${comment.username}...`}
+                                    className="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm placeholder-white/40 focus:outline-none focus:border-blue-400 min-w-0" // min-w-0 prevents flex stretch
+                                    autoFocus
+                                />
+                                <button
+                                    onClick={() => handleSubmitReply(comment.id)}
+                                    className="bg-blue-500 hover:bg-blue-600 p-2 rounded-lg transition shrink-0"
+                                >
+                                    <Send size={16} className="text-white" />
+                                </button>
+                            </div>
                             <button
                                 onClick={() => {
                                     setReplyingTo(null);
                                     setReplyContent('');
                                 }}
-                                className="bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg text-white/70 text-sm transition"
+                                className="text-white/60 text-xs hover:text-white self-start ml-1"
                             >
                                 Annuler
                             </button>
