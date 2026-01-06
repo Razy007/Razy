@@ -1,6 +1,29 @@
 import React, { useState, useMemo } from 'react';
 import { X, Play, FileText, Lightbulb, Code, CheckCircle, ChevronRight, BookOpen, Youtube } from 'lucide-react';
 
+export interface LocalizedContent {
+    fr: string;
+    en: string;
+}
+
+export interface LocalizedArray {
+    fr: string[];
+    en: string[];
+}
+
+// The raw data format (allowing localization)
+export interface RawDiscoveryContent {
+    type: 'video' | 'case-study' | 'infographic' | 'demo' | 'article';
+    title: string | LocalizedContent;
+    description: string | LocalizedContent;
+    content: string | LocalizedContent;
+    duration?: string;
+    visualUrl?: string;
+    highlights?: string[] | LocalizedArray;
+    codeExample?: string;
+}
+
+// The view model (resolved strings)
 export interface DiscoveryContent {
     type: 'video' | 'case-study' | 'infographic' | 'demo' | 'article';
     title: string;
@@ -32,7 +55,7 @@ export const DiscoveryViewer: React.FC<DiscoveryViewerProps> = ({ content: conte
     const [isCompleted, setIsCompleted] = useState(false);
 
     // Prioritize passed contentProp (localized), then layer.discoveryContent, then fallback
-    const content: DiscoveryContent = contentProp || layer.discoveryContent || {
+    const content: DiscoveryContent = useMemo(() => contentProp || layer.discoveryContent || {
         type: 'article',
         title: layer.title,
         description: layer.description,
@@ -42,9 +65,9 @@ export const DiscoveryViewer: React.FC<DiscoveryViewerProps> = ({ content: conte
             'Exemples concrets et pratiques',
             'Applications dans le monde réel'
         ]
-    };
+    }, [contentProp, layer.discoveryContent, layer.title, layer.description]);
 
-    const contentSteps = content.highlights || [content.description];
+    const contentSteps = useMemo(() => content.highlights || [content.description], [content.highlights, content.description]);
 
     // Split content into logical paragraphs for each step
     const contentParagraphs = useMemo(() => {
@@ -66,7 +89,7 @@ export const DiscoveryViewer: React.FC<DiscoveryViewerProps> = ({ content: conte
             const end = Math.min((index + 1) * portionSize, paragraphs.length);
             return paragraphs.slice(0, end).join('\n\n');
         });
-    }, [content.content, contentSteps.length]);
+    }, [content.content, contentSteps]);
 
     const getTypeIcon = () => {
         switch (content.type) {

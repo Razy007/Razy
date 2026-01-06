@@ -99,7 +99,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                     {/* Comment Header */}
                     <div className="flex items-start gap-3">
                         <div className="text-2xl">{comment.avatar}</div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="font-semibold text-white text-sm">
                                     {comment.username}
@@ -110,7 +110,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
                             </div>
                             
                             {/* Comment Content */}
-                            <p className="text-white/90 text-sm mb-2">
+                            <p className="text-white/90 text-sm mb-2 break-words whitespace-pre-wrap">
                                 {comment.content}
                             </p>
 
@@ -223,7 +223,7 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
             {/* New Comment Input */}
             <div className="flex gap-2 mb-4">
                 <div className="text-2xl">{currentAvatar}</div>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                     <input
                         type="text"
                         value={newComment}

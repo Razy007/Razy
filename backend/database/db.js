@@ -1,4 +1,6 @@
-const { MongoClient } = require('mongodb');
+import { MongoClient } from 'mongodb';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017';
 const DB_NAME = process.env.DB_NAME || 'pi_academy';
@@ -9,7 +11,7 @@ let client = null;
 /**
  * Connect to MongoDB
  */
-const connectDB = async () => {
+export const connectDB = async () => {
     try {
         client = new MongoClient(MONGO_URI, {
             useUnifiedTopology: true,
@@ -35,7 +37,7 @@ const connectDB = async () => {
 /**
  * Get database instance
  */
-const getDB = () => {
+export const getDB = () => {
     if (!db) {
         throw new Error('Database not initialized. Call connectDB() first.');
     }
@@ -45,7 +47,7 @@ const getDB = () => {
 /**
  * Get collection
  */
-const getCollection = (name) => {
+export const getCollection = (name) => {
     return getDB().collection(name);
 };
 
@@ -84,7 +86,7 @@ const createIndexes = async () => {
 /**
  * Close database connection
  */
-const closeDB = async () => {
+export const closeDB = async () => {
     if (client) {
         await client.close();
         console.log('📴 MongoDB connection closed');
@@ -98,14 +100,14 @@ const closeDB = async () => {
 /**
  * Find user by UID
  */
-const findUserByUid = async (uid) => {
+export const findUserByUid = async (uid) => {
     return await getCollection('users').findOne({ uid });
 };
 
 /**
  * Create or update user
  */
-const upsertUser = async (userData) => {
+export const upsertUser = async (userData) => {
     return await getCollection('users').updateOne(
         { uid: userData.uid },
         { $set: { ...userData, updatedAt: new Date() } },
@@ -116,14 +118,14 @@ const upsertUser = async (userData) => {
 /**
  * Get user progress
  */
-const getUserProgress = async (userId) => {
+export const getUserProgress = async (userId) => {
     return await getCollection('progress').findOne({ userId });
 };
 
 /**
  * Update user progress
  */
-const updateUserProgress = async (userId, progressData) => {
+export const updateUserProgress = async (userId, progressData) => {
     return await getCollection('progress').updateOne(
         { userId },
         { 
@@ -137,7 +139,7 @@ const updateUserProgress = async (userId, progressData) => {
 /**
  * Create transaction
  */
-const createTransaction = async (transactionData) => {
+export const createTransaction = async (transactionData) => {
     return await getCollection('transactions').insertOne({
         ...transactionData,
         timestamp: new Date(),
@@ -148,7 +150,7 @@ const createTransaction = async (transactionData) => {
 /**
  * Get user transactions
  */
-const getUserTransactions = async (userId, limit = 50) => {
+export const getUserTransactions = async (userId, limit = 50) => {
     return await getCollection('transactions')
         .find({ userId })
         .sort({ timestamp: -1 })
@@ -159,7 +161,7 @@ const getUserTransactions = async (userId, limit = 50) => {
 /**
  * Start staking (atomic transaction)
  */
-const startStaking = async (userId, amount, period) => {
+export const startStaking = async (userId, amount, period) => {
     const session = client.startSession();
     
     try {
@@ -223,7 +225,7 @@ const startStaking = async (userId, amount, period) => {
 /**
  * Unstake (atomic transaction)
  */
-const unstake = async (userId) => {
+export const unstake = async (userId) => {
     const session = client.startSession();
     
     try {
@@ -296,23 +298,4 @@ const unstake = async (userId) => {
     } finally {
         await session.endSession();
     }
-};
-
-module.exports = {
-    connectDB,
-    getDB,
-    getCollection,
-    closeDB,
-    // User operations
-    findUserByUid,
-    upsertUser,
-    // Progress operations
-    getUserProgress,
-    updateUserProgress,
-    // Transaction operations
-    createTransaction,
-    getUserTransactions,
-    // Staking operations
-    startStaking,
-    unstake
 };

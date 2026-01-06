@@ -1,24 +1,71 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Users, Copy, TrendingUp, Award, Gift, Share2, X, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ReferralAPI from '../../services/ReferralAPI';
+
+interface ReferralStats {
+    totalReferrals: number;
+    activeReferrals: number;
+    pendingReferrals?: number;
+    totalEarnings: {
+        xp: number;
+        pi: number;
+    };
+    milestones?: Record<string, { unlocked: boolean }>;
+}
+
+interface ReferralUser {
+    username: string;
+    avatar: string;
+    level: number;
+    status: 'active' | 'pending' | 'inactive';
+    signupDate: string;
+    rewardsEarned: {
+        totalXP: number;
+        totalPi: number;
+    };
+    milestones?: Record<string, { completed: boolean; date?: string }>;
+}
+
+interface ReferralData {
+    code: {
+        referralCode: string;
+        shareLink: string;
+        stats?: ReferralStats;
+    };
+    stats: {
+        stats: ReferralStats;
+        referrals: ReferralUser[];
+        pendingRewards: {
+            xp: number;
+            pi: number;
+            badges: string[];
+        };
+    };
+}
 
 interface ReferralDashboardProps {
   userToken: string;
   onClose: () => void;
 }
 
+interface MilestoneTier {
+    tier: string;
+    count: number;
+    xp: number;
+    pi: number;
+    label: string;
+    badge?: string;
+    special?: string;
+}
+
 export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken, onClose }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [referralData, setReferralData] = useState<any>(null);
+  const [referralData, setReferralData] = useState<ReferralData | null>(null);
   const [claiming, setClaiming] = useState(false);
 
-  useEffect(() => {
-    loadReferralData();
-  }, []);
-
-  const loadReferralData = async () => {
+  const loadReferralData = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -123,10 +170,14 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
     } finally {
       setLoading(false);
     }
-  };
+  }, [userToken, t]);
+
+  useEffect(() => {
+    loadReferralData();
+  }, [loadReferralData]);
 
   const handleClaimRewards = async () => {
-    if (claiming) return;
+    if (claiming || !referralData) return;
     
     try {
       setClaiming(true);
@@ -191,14 +242,14 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
     return (
       <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
         <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl p-8">
-          <p className="text-white text-xl">Chargement...</p>
+          <p className="text-white text-xl">{t('common.loading')}</p>
         </div>
       </div>
     );
   }
 
   const { code, stats } = referralData || {};
-  const hasPendingRewards = stats?.pendingRewards?.xp > 0 || stats?.pendingRewards?.pi > 0;
+  const hasPendingRewards = (stats?.pendingRewards?.xp || 0) > 0 || (stats?.pendingRewards?.pi || 0) > 0;
 
   return (
     <div 
@@ -214,9 +265,9 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
           <div>
             <h2 className="text-2xl font-bold text-black flex items-center gap-2">
               <Users size={28} />
-              Système de Parrainage
+              {t('referral.title')}
             </h2>
-            <p className="text-black/80 text-sm mt-1">Invitez vos amis et gagnez des récompenses</p>
+            <p className="text-black/80 text-sm mt-1">{t('referral.subtitle')}</p>
           </div>
           <button
             onClick={onClose}
@@ -231,11 +282,11 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-yellow-400/30">
             <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
               <Share2 size={20} className="text-yellow-400" />
-              Votre Code de Parrainage
+              {t('referral.your_code')}
             </h3>
             
             <div className="bg-black/30 rounded-lg p-4 mb-4">
-              <p className="text-purple-300 text-sm mb-2">Code unique :</p>
+              <p className="text-purple-300 text-sm mb-2">{t('referral.unique_code')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-white font-mono font-bold text-2xl flex-1">{code?.referralCode}</p>
                 <button
@@ -243,13 +294,13 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
                   className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-500 transition flex items-center gap-2"
                 >
                   <Copy size={16} />
-                  Copier
+                  {t('referral.copy')}
                 </button>
               </div>
             </div>
 
             <div className="bg-black/30 rounded-lg p-4 mb-4">
-              <p className="text-purple-300 text-sm mb-2">Lien de partage :</p>
+              <p className="text-purple-300 text-sm mb-2">{t('referral.share_link')}</p>
               <div className="flex items-center gap-2">
                 <p className="text-white text-sm flex-1 break-all">{code?.shareLink}</p>
                 <button
@@ -257,16 +308,15 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
                   className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-500 transition whitespace-nowrap flex items-center gap-2"
                 >
                   <Share2 size={16} />
-                  Partager
+                  {t('referral.share')}
                 </button>
               </div>
             </div>
 
             <div className="bg-blue-500/20 border border-blue-400/30 rounded-lg p-3">
               <p className="text-blue-300 text-sm">
-                💡 <strong>Comment ça marche ?</strong><br />
-                Partagez votre code ou lien avec vos amis. Ils recevront +50 XP + 0.0001π à l'inscription,
-                et vous gagnerez des récompenses quand ils progressent !
+                💡 <strong>{t('referral.how_works_title')}</strong><br />
+                {t('referral.how_works_desc')}
               </p>
             </div>
           </div>
@@ -277,7 +327,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
               <div className="flex items-center justify-between mb-2">
                 <Users size={20} className="text-purple-400" />
               </div>
-              <p className="text-purple-300 text-xs mb-1">Total Filleuls</p>
+              <p className="text-purple-300 text-xs mb-1">{t('referral.stats_total')}</p>
               <p className="text-white text-2xl font-bold">{stats?.stats?.totalReferrals || 0}</p>
             </div>
 
@@ -285,7 +335,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
               <div className="flex items-center justify-between mb-2">
                 <TrendingUp size={20} className="text-green-400" />
               </div>
-              <p className="text-green-300 text-xs mb-1">Filleuls Actifs</p>
+              <p className="text-green-300 text-xs mb-1">{t('referral.stats_active')}</p>
               <p className="text-white text-2xl font-bold">{stats?.stats?.activeReferrals || 0}</p>
             </div>
 
@@ -293,7 +343,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
               <div className="flex items-center justify-between mb-2">
                 <Award size={20} className="text-yellow-400" />
               </div>
-              <p className="text-yellow-300 text-xs mb-1">XP Gagné</p>
+              <p className="text-yellow-300 text-xs mb-1">{t('referral.stats_xp')}</p>
               <p className="text-white text-2xl font-bold">{stats?.stats?.totalEarnings?.xp || 0}</p>
             </div>
 
@@ -301,17 +351,17 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
               <div className="flex items-center justify-between mb-2">
                 <Gift size={20} className="text-orange-400" />
               </div>
-              <p className="text-orange-300 text-xs mb-1">Pi Gagné</p>
+              <p className="text-orange-300 text-xs mb-1">{t('referral.stats_pi')}</p>
               <p className="text-white text-2xl font-bold">{(stats?.stats?.totalEarnings?.pi || 0).toFixed(6)}π</p>
             </div>
           </div>
 
           {/* Récompenses en Attente */}
-          {hasPendingRewards && (
+          {hasPendingRewards && stats?.pendingRewards && (
             <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-xl p-6 border-2 border-green-400/30">
               <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
                 <Gift size={20} className="text-green-400 animate-pulse" />
-                Récompenses en Attente
+                {t('referral.pending_rewards')}
               </h3>
               
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -330,24 +380,24 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
                 disabled={claiming}
                 className="w-full bg-gradient-to-r from-green-400 to-emerald-500 text-black font-bold py-4 rounded-xl hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {claiming ? '⏳ Réclamation...' : '💰 Réclamer Maintenant'}
+                {claiming ? `⏳ ${t('referral.claiming')}` : `💰 ${t('referral.claim_button')}`}
               </button>
             </div>
           )}
 
           {/* Liste des Filleuls */}
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <h3 className="text-white font-bold text-xl mb-4">Mes Filleuls ({stats?.referrals?.length || 0})</h3>
+            <h3 className="text-white font-bold text-xl mb-4">{t('referral.my_referrals')} ({stats?.referrals?.length || 0})</h3>
             
-            {stats?.referrals?.length === 0 ? (
+            {!stats?.referrals || stats.referrals.length === 0 ? (
               <div className="text-center py-8">
                 <AlertCircle size={48} className="text-purple-400 mx-auto mb-4" />
-                <p className="text-white/70">Aucun filleul pour le moment</p>
-                <p className="text-white/50 text-sm mt-2">Partagez votre code pour commencer !</p>
+                <p className="text-white/70">{t('referral.no_referrals')}</p>
+                <p className="text-white/50 text-sm mt-2">{t('referral.start_sharing')}</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {stats?.referrals?.map((referral: any, index: number) => (
+                {stats.referrals.map((referral, index) => (
                   <div
                     key={index}
                     className="bg-black/30 rounded-lg p-4 flex items-center justify-between hover:bg-black/40 transition"
@@ -357,7 +407,7 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
                       <div>
                         <p className="text-white font-semibold">{referral.username}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-purple-300 text-xs">Niveau {referral.level}</span>
+                          <span className="text-purple-300 text-xs">{t('stats.level')} {referral.level}</span>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                             referral.status === 'active' 
                               ? 'bg-green-500/20 text-green-400'
@@ -382,16 +432,16 @@ export const ReferralDashboard: React.FC<ReferralDashboardProps> = ({ userToken,
           <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
             <h3 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
               <Award size={20} className="text-yellow-400" />
-              Paliers Collectifs
+              {t('referral.milestones_title')}
             </h3>
             
             <div className="space-y-3">
               {[
-                { tier: 'tier5', count: 5, xp: 500, pi: 0.001, label: '5 Filleuls Actifs' },
-                { tier: 'tier10', count: 10, xp: 1500, pi: 0.005, label: '10 Filleuls Actifs', badge: 'Referral Master' },
-                { tier: 'tier25', count: 25, xp: 0, pi: 0, label: '25 Filleuls Actifs', special: 'Premium Gratuit 1 mois' },
-                { tier: 'tier50', count: 50, xp: 0, pi: 0, label: '50 Filleuls Actifs', special: 'Badge Légendaire' }
-              ].map((tier: any) => {
+                { tier: 'tier5', count: 5, xp: 500, pi: 0.001, label: t('referral.tiers.five_active') },
+                { tier: 'tier10', count: 10, xp: 1500, pi: 0.005, label: t('referral.tiers.ten_active'), badge: 'Referral Master' },
+                { tier: 'tier25', count: 25, xp: 0, pi: 0, label: t('referral.tiers.twentyfive_active'), special: t('referral.tiers.free_premium') },
+                { tier: 'tier50', count: 50, xp: 0, pi: 0, label: t('referral.tiers.fifty_active'), special: t('referral.tiers.legendary_badge') }
+              ].map((tier: MilestoneTier) => {
                 const unlocked = stats?.stats?.milestones?.[tier.tier]?.unlocked;
                 const progress = Math.min((stats?.stats?.activeReferrals || 0) / tier.count * 100, 100);
                 

@@ -1,5 +1,6 @@
-const axios = require('axios');
-require('dotenv').config();
+import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const PI_API_URL = 'https://api.minepi.com/v2';
 
@@ -8,7 +9,7 @@ const PI_API_URL = 'https://api.minepi.com/v2';
  * @param {string} accessToken 
  * @returns {Promise<Object>} User data from Pi Network
  */
-const verifyPiToken = async (accessToken) => {
+export const verifyPiToken = async (accessToken) => {
     if (!accessToken) {
         throw new Error('Access token is required');
     }
@@ -46,7 +47,7 @@ const verifyPiToken = async (accessToken) => {
  * Get Payment Details from Pi Network
  * @param {string} paymentId 
  */
-const getPayment = async (paymentId) => {
+export const getPayment = async (paymentId) => {
     try {
         const response = await axios.get(`${PI_API_URL}/payments/${paymentId}`, {
             headers: {
@@ -64,7 +65,7 @@ const getPayment = async (paymentId) => {
  * Approve a payment (Server-side)
  * @param {string} paymentId 
  */
-const approvePayment = async (paymentId) => {
+export const approvePayment = async (paymentId) => {
     try {
         const response = await axios.post(`${PI_API_URL}/payments/${paymentId}/approve`, {}, {
             headers: {
@@ -83,7 +84,7 @@ const approvePayment = async (paymentId) => {
  * @param {string} paymentId 
  * @param {string} txid 
  */
-const completePayment = async (paymentId, txid) => {
+export const completePayment = async (paymentId, txid) => {
     try {
         const response = await axios.post(`${PI_API_URL}/payments/${paymentId}/complete`, { txid }, {
             headers: {
@@ -95,11 +96,4 @@ const completePayment = async (paymentId, txid) => {
         console.error('Complete Payment Failed:', error.response?.data || error.message);
         throw error;
     }
-};
-
-module.exports = {
-    verifyPiToken,
-    getPayment,
-    approvePayment,
-    completePayment
 };

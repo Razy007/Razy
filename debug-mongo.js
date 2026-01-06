@@ -1,16 +1,24 @@
-const mongoose = require('mongoose');
-const path = require('path');
-// Try to load .env from parent directory (if script is in backend/) OR current directory
-const envPath = path.join(__dirname, '../.env');
-require('dotenv').config({ path: envPath });
+import mongoose from 'mongoose';
+import path from 'path';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import process from 'process';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Try to load .env from current directory (root)
+const envPath = path.join(__dirname, '.env');
+dotenv.config({ path: envPath });
 
 console.log('🔍 MongoDB Debug Tool');
 console.log('---------------------');
 console.log(`Loading .env from: ${envPath}`);
 
 if (!process.env.MONGO_URI) {
-    // Fallback try current dir
-    require('dotenv').config({ path: path.join(__dirname, '.env') });
+    // Fallback try parent dir just in case
+    const parentEnv = path.join(__dirname, '../.env');
+    dotenv.config({ path: parentEnv });
     if (!process.env.MONGO_URI) {
         console.error('❌ MONGO_URI is missing from .env');
         process.exit(1);

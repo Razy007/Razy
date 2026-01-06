@@ -1,4 +1,6 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'pi_academy_secret_key_change_in_production';
 const JWT_EXPIRES_IN = '7d';
@@ -6,14 +8,14 @@ const JWT_EXPIRES_IN = '7d';
 /**
  * Generate JWT token
  */
-const generateToken = (payload) => {
+export const generateToken = (payload) => {
     return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
 /**
  * Verify JWT token
  */
-const verifyToken = (token) => {
+export const verifyToken = (token) => {
     try {
         return jwt.verify(token, JWT_SECRET);
     } catch (error) {
@@ -25,7 +27,7 @@ const verifyToken = (token) => {
  * Authentication middleware
  * Verifies JWT token and attaches user to request
  */
-const authenticateToken = (req, res, next) => {
+export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
@@ -55,7 +57,7 @@ const authenticateToken = (req, res, next) => {
  * KYC verification middleware
  * Requires user to have verified KYC status
  */
-const requireKYC = (req, res, next) => {
+export const requireKYC = (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({
             success: false,
@@ -81,7 +83,7 @@ const requireKYC = (req, res, next) => {
  * Pioneer status middleware
  * Requires user to be at least a Pioneer (not guest)
  */
-const requirePioneer = (req, res, next) => {
+export const requirePioneer = (req, res, next) => {
     if (!req.user) {
         return res.status(401).json({
             success: false,
@@ -104,10 +106,23 @@ const requirePioneer = (req, res, next) => {
 };
 
 /**
+ * Get user-friendly message based on status and feature
+ */
+const getUserStatusMessage = (userStatus, feature) => {
+    if (userStatus === 'guest') {
+        return `Connectez-vous avec Pi Network pour accéder à ${feature}.`;
+    }
+    if (userStatus === 'pioneer_non_kyc') {
+        return `Complétez votre KYC pour débloquer toutes les fonctionnalités de ${feature}.`;
+    }
+    return 'Accès refusé.';
+};
+
+/**
  * Access control middleware factory
  * Checks if user has access to specific feature/action
  */
-const requireAccess = (feature, action) => {
+export const requireAccess = (feature, action) => {
     const ACCESS_MATRIX = {
         guest: {
             staking: { canStake: false },
@@ -159,26 +174,4 @@ const requireAccess = (feature, action) => {
         req.accessLimits = access[feature];
         next();
     };
-};
-
-/**
- * Get user-friendly message based on status and feature
- */
-const getUserStatusMessage = (userStatus, feature) => {
-    if (userStatus === 'guest') {
-        return `Connectez-vous avec Pi Network pour accéder à ${feature}.`;
-    }
-    if (userStatus === 'pioneer_non_kyc') {
-        return `Complétez votre KYC pour débloquer toutes les fonctionnalités de ${feature}.`;
-    }
-    return 'Accès refusé.';
-};
-
-module.exports = {
-    generateToken,
-    verifyToken,
-    authenticateToken,
-    requireKYC,
-    requirePioneer,
-    requireAccess
 };

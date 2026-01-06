@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import axios from 'axios';
+import { authenticateToken } from '../middleware/auth.js';
+import { getPayment, approvePayment, completePayment as completePiPayment } from '../services/piNetworkService.js';
+import { updateUserProgress, createTransaction, getCollection } from '../database/db.js';
+
 const router = express.Router();
-const axios = require('axios');
-const { authenticateToken } = require('../middleware/auth');
-const { getPayment, approvePayment, completePayment: completePiPayment } = require('../services/piNetworkService');
-const { updateUserProgress, createTransaction, getCollection } = require('../database/db'); 
 
 // Pi Platform API URL
 const PI_PLATFORM_API_URL = 'https://api.minepi.com/v2';
@@ -185,4 +186,4 @@ async function deliverItem(userId, payment) {
     console.log(`[DELIVERY] Delivered ${type} to ${userId}`);
 }
 
-module.exports = router;
+export default router;

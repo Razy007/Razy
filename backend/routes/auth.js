@@ -1,8 +1,9 @@
-const express = require('express');
+import express from 'express';
+import { generateToken } from '../middleware/auth.js';
+import { findUserByUid, upsertUser, getUserProgress, updateUserProgress } from '../database/db.js';
+import { verifyPiToken } from '../services/piNetworkService.js';
+
 const router = express.Router();
-const { generateToken } = require('../middleware/auth');
-const { findUserByUid, upsertUser, getUserProgress, updateUserProgress } = require('../database/db');
-const { verifyPiToken } = require('../services/piNetworkService');
 
 /**
  * POST /api/auth/pi
@@ -289,4 +290,4 @@ router.post('/kyc/update', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

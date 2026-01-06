@@ -1,11 +1,11 @@
-import { DiscoveryContent } from '../components/education/DiscoveryViewer';
+import { DiscoveryContent, RawDiscoveryContent, LocalizedContent, LocalizedArray } from '../components/education/DiscoveryViewer';
 
 /**
  * CONTENU ENRICHI POUR LES DISCOVERY LAYERS
  * Ce fichier contient du contenu varié et engageant pour les différents types de présentation
  */
 
-export const ENRICHED_DISCOVERY_CONTENT: Record<string, DiscoveryContent> = {
+export const ENRICHED_DISCOVERY_CONTENT: Record<string, RawDiscoveryContent> = {
     'pi-intro-l1': {
         type: 'video',
         title: {
@@ -307,12 +307,12 @@ L'écosystème Pi développe ses propres protocoles DeFi. Bientôt, vous pourrez
 
 // Fonction helper pour enrichir un layer avec du contenu
 // Fonction helper pour enrichir un layer avec du contenu LOCALISÉ
-export function enrichDiscoveryLayer(layerId: string, lang: string = 'fr'): any {
+export function enrichDiscoveryLayer(layerId: string, lang: string = 'fr'): DiscoveryContent | null {
     const data = ENRICHED_DISCOVERY_CONTENT[layerId];
     if (!data) return null;
 
     // Helper pour extraire la bonne langue ou fallback FR
-    const t = (field: any) => {
+    const t = (field: string | LocalizedContent | string[] | LocalizedArray | undefined) => {
         if (typeof field === 'string') return field; // Pas encore traduit (legacy)
         if (lang === 'en' && field.en) return field.en;
         return field.fr || field;

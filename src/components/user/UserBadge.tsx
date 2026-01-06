@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield, CheckCircle, Crown, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export type UserStatus = 'guest' | 'pioneer_non_kyc' | 'pioneer_kyc';
 
@@ -18,38 +19,40 @@ interface BadgeConfig {
     description: string;
 }
 
-const BADGE_CONFIGS: Record<UserStatus, BadgeConfig> = {
-    guest: {
-        icon: <User />,
-        label: 'Invité',
-        color: 'text-gray-400',
-        bgColor: 'bg-gray-500/20',
-        borderColor: 'border-gray-500',
-        description: 'Accès limité - Connectez-vous avec Pi pour débloquer toutes les fonctionnalités'
-    },
-    pioneer_non_kyc: {
-        icon: <Shield />,
-        label: 'Pioneer',
-        color: 'text-blue-400',
-        bgColor: 'bg-blue-500/20',
-        borderColor: 'border-blue-500',
-        description: 'Pioneer vérifié - Complétez votre KYC pour débloquer les fonctionnalités premium'
-    },
-    pioneer_kyc: {
-        icon: <Crown />,
-        label: 'Pioneer KYC',
-        color: 'text-yellow-400',
-        bgColor: 'bg-yellow-500/20',
-        borderColor: 'border-yellow-500',
-        description: 'Pioneer KYC vérifié - Accès complet à toutes les fonctionnalités'
-    }
-};
-
 export const UserBadge: React.FC<UserBadgeProps> = ({ 
     status, 
     size = 'medium', 
     showLabel = true 
 }) => {
+    const { t } = useTranslation();
+
+    const BADGE_CONFIGS: Record<UserStatus, BadgeConfig> = {
+        guest: {
+            icon: <User />,
+            label: t('badges.guest'),
+            color: 'text-gray-400',
+            bgColor: 'bg-gray-500/20',
+            borderColor: 'border-gray-500',
+            description: t('badges.guest_desc')
+        },
+        pioneer_non_kyc: {
+            icon: <Shield />,
+            label: t('badges.pioneer'),
+            color: 'text-blue-400',
+            bgColor: 'bg-blue-500/20',
+            borderColor: 'border-blue-500',
+            description: t('badges.pioneer_desc')
+        },
+        pioneer_kyc: {
+            icon: <Crown />,
+            label: t('badges.pioneer_kyc'),
+            color: 'text-yellow-400',
+            bgColor: 'bg-yellow-500/20',
+            borderColor: 'border-yellow-500',
+            description: t('badges.pioneer_kyc_desc')
+        }
+    };
+
     const config = BADGE_CONFIGS[status];
     
     const sizeClasses = {
@@ -108,20 +111,49 @@ export const AccessBlockMessage: React.FC<AccessBlockMessageProps> = ({
     feature,
     onUpgrade
 }) => {
+    const { t } = useTranslation();
+
+    const BADGE_CONFIGS: Record<UserStatus, BadgeConfig> = {
+        guest: {
+            icon: <User />,
+            label: t('badges.guest'),
+            color: 'text-gray-400',
+            bgColor: 'bg-gray-500/20',
+            borderColor: 'border-gray-500',
+            description: t('badges.guest_desc')
+        },
+        pioneer_non_kyc: {
+            icon: <Shield />,
+            label: t('badges.pioneer'),
+            color: 'text-blue-400',
+            bgColor: 'bg-blue-500/20',
+            borderColor: 'border-blue-500',
+            description: t('badges.pioneer_desc')
+        },
+        pioneer_kyc: {
+            icon: <Crown />,
+            label: t('badges.pioneer_kyc'),
+            color: 'text-yellow-400',
+            bgColor: 'bg-yellow-500/20',
+            borderColor: 'border-yellow-500',
+            description: t('badges.pioneer_kyc_desc')
+        }
+    };
+
     const currentConfig = BADGE_CONFIGS[currentStatus];
     const requiredConfig = BADGE_CONFIGS[requiredStatus];
 
     const getUpgradeMessage = () => {
         if (currentStatus === 'guest' && requiredStatus === 'pioneer_non_kyc') {
-            return 'Connectez-vous avec Pi Network pour accéder à cette fonctionnalité.';
+            return t('badges.upgrade_guest');
         }
         if (currentStatus === 'guest' && requiredStatus === 'pioneer_kyc') {
-            return 'Connectez-vous avec Pi Network et complétez votre KYC pour accéder à cette fonctionnalité.';
+            return t('badges.upgrade_guest'); // Simplified logic, same message for guest
         }
         if (currentStatus === 'pioneer_non_kyc' && requiredStatus === 'pioneer_kyc') {
-            return 'Complétez votre KYC pour débloquer cette fonctionnalité.';
+            return t('badges.upgrade_kyc');
         }
-        return 'Améliorez votre statut pour accéder à cette fonctionnalité.';
+        return t('badges.upgrade_kyc'); // Default fallback
     };
 
     return (
@@ -154,11 +186,11 @@ export const AccessBlockMessage: React.FC<AccessBlockMessageProps> = ({
             </div>
 
             <h3 className="text-xl font-bold text-white mb-2">
-                🔒 Fonctionnalité Verrouillée
+                {t('badges.locked_feature')}
             </h3>
             
             <p className="text-white/80 mb-1">
-                <span className="font-semibold">{feature}</span> nécessite le statut{' '}
+                <span className="font-semibold">{feature}</span> {t('badges.requires_status').replace('{{feature}}', '')} {' '}
                 <span className={`font-bold ${requiredConfig.color}`}>{requiredConfig.label}</span>
             </p>
             
@@ -171,31 +203,28 @@ export const AccessBlockMessage: React.FC<AccessBlockMessageProps> = ({
                     onClick={onUpgrade}
                     className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold px-6 py-3 rounded-lg hover:shadow-lg transition-all"
                 >
-                    {currentStatus === 'guest' ? 'Se Connecter avec Pi' : 'Compléter le KYC'}
+                    {currentStatus === 'guest' ? t('auth.login_pi') : t('badges.upgrade_kyc')}
                 </button>
             )}
 
             {/* Benefits List */}
             <div className="mt-6 bg-black/30 rounded-lg p-4 text-left">
                 <p className="text-white/70 text-sm font-semibold mb-2">
-                    Avantages du statut {requiredConfig.label} :
+                    {t('badges.benefits_title', { status: requiredConfig.label })}
                 </p>
                 <ul className="text-white/60 text-xs space-y-1">
                     {requiredStatus === 'pioneer_non_kyc' && (
                         <>
-                            <li>✅ Accès aux cours avancés</li>
-                            <li>✅ Gains de Pi réels</li>
-                            <li>✅ Participation au classement</li>
-                            <li>✅ Fonctionnalités sociales</li>
+                            <li>✅ {t('nav.courses')}</li>
+                            <li>✅ {t('nav.leaderboard')}</li>
+                            <li>✅ {t('nav.social')}</li>
                         </>
                     )}
                     {requiredStatus === 'pioneer_kyc' && (
                         <>
-                            <li>✅ Tous les avantages Pioneer</li>
-                            <li>✅ Retraits de Pi sans limite</li>
-                            <li>✅ Accès aux cours premium</li>
-                            <li>✅ Staking avec APR élevé</li>
-                            <li>✅ Badge vérifié</li>
+                            <li>✅ {t('badges.pioneer_kyc_desc')}</li>
+                            <li>✅ {t('general.staking')}</li>
+                            <li>✅ {t('general.premium')}</li>
                         </>
                     )}
                 </ul>

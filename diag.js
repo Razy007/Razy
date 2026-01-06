@@ -1,10 +1,23 @@
-const mongoose = require('mongoose');
-const path = require('path');
-// Env is in parent
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+import mongoose from 'mongoose';
+import path from 'path';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import process from 'process';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Env is in current dir usually
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 console.log('🔍 MongoDB DIAGNOSTIC');
-if(!process.env.MONGO_URI) { console.error('NO URI'); process.exit(1); }
+if(!process.env.MONGO_URI) { 
+    // try parent
+     dotenv.config({ path: path.join(__dirname, '../.env') });
+     if(!process.env.MONGO_URI) {
+        console.error('NO URI'); process.exit(1); 
+     }
+}
 
 // Mask pass
 console.log('URI:', process.env.MONGO_URI.replace(/:([^:@]+)@/, ':****@'));

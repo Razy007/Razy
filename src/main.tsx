@@ -29,11 +29,15 @@ class ErrorBoundary extends React.Component<any, any> {
   }
 }
 
+import { BrowserRouter } from 'react-router-dom';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
       <Suspense fallback={<div className="text-white p-4">Loading App & Translations...</div>}>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </Suspense>
     </ErrorBoundary>
   </React.StrictMode>,

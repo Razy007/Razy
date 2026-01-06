@@ -19,12 +19,48 @@ const fr = {
       error: "Erreur",
       success: "Succès"
     },
+    general: {
+      connecting: "Connexion à Pi Network...",
+      welcome: "Bienvenue",
+      days: "jours",
+      premium: "Premium",
+      freeTier: "Gratuit",
+      upgradePremium: "Passer Premium",
+      staking: "Staking",
+      month: "mois",
+      subscribe: "S'abonner"
+    },
+    staking: {
+       title: "Staking Pi",
+       subtitle: "Gagnez des récompenses passives",
+       available: "Disponible pour staking",
+       staked: "En staking",
+       earned: "Récompenses gagnées",
+       start: "Commencer le Staking",
+       unstake: "Retirer"
+    },
     nav: {
       courses: "Cours",
       leaderboard: "Classement",
       social: "Social",
       shop: "Boutique",
-      profile: "Profil"
+      profile_tab: "Profil"
+    },
+    wallet: {
+      title: "Mon Wallet Pi",
+      total_balance: "Balance totale",
+      connected: "Wallet connecté",
+      prompt_withdraw: "Montant à retirer (Min: 0.001π):",
+      withdraw: "Retirer",
+      prompt_deposit: "Montant à déposer (π):",
+      deposit: "Déposer"
+    },
+    leaderboard: {
+      title: "Top Pioneers",
+      subtitle: "Classement hebdomadaire des meilleurs apprenants"
+    },
+    premium: {
+      banner_desc: "Débloquez tous les cours + Boost XP x2 + Frais 0%"
     },
     stats: {
       level: "Niveau",
@@ -55,16 +91,31 @@ const fr = {
       comments: "Commentaires",
       reply: "Répondre",
       like: "J'aime",
-      no_posts: "Aucune publication pour le moment."
+      no_posts: "Aucune publication pour le moment.",
+      subtitle: "Apprenez et grandissez ensemble",
+      refer_friends: "Parrainez vos amis",
+      refer_desc: "Gagnez jusqu'à 200 XP et 0.001π par ami !",
+      view_code: "Voir mon code",
+      share_progress: "Partagez votre progression",
+      post_placeholder: "Partagez vos réussites, posez des questions, aidez la communauté...",
+      earn_xp_hint: "💡 Gagnez +10 XP par publication",
+      delete_tooltip: "Supprimer la publication",
+      comment_action: "Commenter",
+      refer_title: "Parrainez vos amis!",
+      refer_text: "Invitez vos amis à rejoindre Pioneer Academy et gagnez des récompenses",
+      per_friend: "par ami",
+      share_link: "📤 Partager mon lien"
     },
-    profile: {
+    profilePage: {
       title: "Profil Pionnier",
       settings: "Paramètres",
       language: "Langue",
       notifications: "Notifications",
       sound: "Sons",
       support: "Support / FAQ",
-      logout: "Déconnexion"
+      logout: "Déconnexion",
+      remove_pic: "Supprimer la photo",
+      referral_code: "Code de Parrainage"
     },
     ads: {
       limit_reached: "⏳ Limite atteinte: Un retry sponsorisé toutes les 6h.\\nRevenez dans {{hours}}h.",
@@ -87,7 +138,35 @@ const fr = {
       link_copied: "✅ Lien copié dans le presse-papier!",
       link_copy_error: "❌ Impossible de copier le lien",
       code_copied: "✅ Code copié!",
-      code_copy_error: "❌ Impossible de copier le code"
+      code_copy_error: "❌ Impossible de copier le code",
+      title: "Système de Parrainage",
+      subtitle: "Invitez vos amis et gagnez des récompenses",
+      your_code: "Votre Code de Parrainage",
+      unique_code: "Code unique :",
+      copy: "Copier",
+      share_link: "Lien de partage :",
+      share: "Partager",
+      how_works_title: "Comment ça marche ?",
+      how_works_desc: "Partagez votre code ou lien avec vos amis. Ils recevront +50 XP + 0.0001π à l'inscription, et vous gagnerez des récompenses quand ils progressent !",
+      stats_total: "Total Filleuls",
+      stats_active: "Filleuls Actifs",
+      stats_xp: "XP Gagné",
+      stats_pi: "Pi Gagné",
+      pending_rewards: "Récompenses en Attente",
+      claim_button: "Réclamer Maintenant",
+      claiming: "Réclamation...",
+      my_referrals: "Mes Filleuls",
+      no_referrals: "Aucun filleul pour le moment",
+      start_sharing: "Partagez votre code pour commencer !",
+      milestones_title: "Paliers Collectifs",
+      tiers: {
+        five_active: "5 Filleuls Actifs",
+        ten_active: "10 Filleuls Actifs",
+        twentyfive_active: "25 Filleuls Actifs",
+        fifty_active: "50 Filleuls Actifs",
+        free_premium: "Premium Gratuit 1 mois",
+        legendary_badge: "Badge Légendaire"
+      }
     },
     shop: {
       insufficient_balance_detail: "⚠️ Solde insuffisant!\\n\\nCoût: {{cost}}π\\nVotre solde: {{balance}}π\\nManquant: {{missing}}π",
@@ -95,7 +174,63 @@ const fr = {
       purchase_success: "✅ Achat réussi!\\n\\n{{productName}}{{extra}}",
       extra_energy: "\\n+{{amount}}⚡ ajouté",
       extra_boost: "\\n🚀 Régénération doublée pour 24h",
-      extra_unlimited: "\\n♾️ Énergie illimitée activée pour 7 jours"
+      extra_unlimited: "\\n♾️ Énergie illimitée activée pour 7 jours",
+      items: {
+        avatar_premium: "Avatar Premium",
+        avatar_desc: "Démarquez-vous",
+        badge_legendary: "Badge Légendaire",
+        badge_desc: "Statut exclusif",
+        boost_xp: "Boost XP x2",
+        boost_desc: "24h de boost",
+        pass_premium: "Pass Premium",
+        pass_desc: "Accès illimité",
+        pack_starter: "Pack Débutant",
+        pack_desc: "Avatar + 2 Boosts + Badge"
+      },
+      subtitle: "Échangez vos Pi contre des items exclusifs",
+      your_balance: "Votre balance",
+      buy: "Acheter",
+      insufficient: "Insuffisant",
+      special_packs: "Packs Spéciaux"
+    },
+    badges: {
+      guest: "Invité",
+      guest_desc: "Accès limité - Connectez-vous avec Pi pour débloquer toutes les fonctionnalités",
+      pioneer: "Pioneer",
+      pioneer_desc: "Pioneer vérifié - Complétez votre KYC pour débloquer les fonctionnalités premium",
+      pioneer_kyc: "Pioneer KYC",
+      pioneer_kyc_desc: "Pioneer KYC vérifié - Accès complet à toutes les fonctionnalités",
+      locked_feature: "🔒 Fonctionnalité Verrouillée",
+      requires_status: "{{feature}} nécessite le statut",
+      upgrade_guest: "Connectez-vous avec Pi Network pour accéder à cette fonctionnalité.",
+      upgrade_kyc: "Complétez votre KYC pour débloquer cette fonctionnalité.",
+      benefits_title: "Avantages du statut {{status}} :"
+    },
+    alerts: {
+      premium_welcome: "🎉 Bienvenue Premium!\\n\\n✨ Avantages activés:\\n• Cours exclusifs déverrouillés\\n• Boost XP permanent x2\\n• Frais de retrait 0%\\n• Support prioritaire\\n• Badge Premium",
+      invalid_amount: "⚠️ Montant invalide!\\n\\nVeuillez entrer un montant valide supérieur à 0.",
+      insufficient_balance: "⚠️ Solde insuffisant!",
+      staking_started: "✅ Staking démarré!\\n\\n💎 Montant: {{amount}}π\\n📅 Période: {{period}} jours\\n📈 APR: {{apr}}%\\n\\n⏰ Récompenses calculées automatiquement!",
+      no_stake: "⚠️ Aucun Pi en staking!\\n\\nVous devez d'abord staker des Pi avant de pouvoir les retirer.",
+      unstake_success: "✅ Unstake réussi!\\n\\n💰 Total récupéré: {{total}}π\\n📊 Principal: {{principal}}π\\n🎁 Récompenses: {{rewards}}π\\n\\n💡 Vous pouvez maintenant utiliser vos Pi!",
+      empty_post: "⚠️ Veuillez écrire quelque chose!",
+      post_shared: "✅ Publication partagée!\\n+10 XP gagné (Quota: {{count}}/3)",
+      post_shared_limit: "✅ Publication partagée!\\n(Quota XP journalier atteint)",
+      confirm_delete_post: "🗑️ Supprimer cette publication ?\\n\\nCette action est irréversible.",
+      image_type_error: "⚠️ Veuillez sélectionner une image valide (JPG, PNG, GIF, etc.)",
+      image_size_error: "⚠️ L'image est trop grande! Maximum 2MB.",
+      profile_pic_updated: "✅ Photo de profil mise à jour!",
+      profile_pic_removed: "✅ Photo de profil supprimée! Avatar emoji restauré.",
+      copy_success: "✅ Lien copié dans le presse-papier !",
+      copy_fail: "❌ Impossible de copier le lien. Veuillez le sélectionner et copier manuellement.",
+      wallet_linked: "✅ Wallet lié et vérifié!\\n\\n+{{xp}} XP\\n+{{pi}}π",
+      withdraw_success: "✅ Retrait effectué!\\n\\nMontant: {{amount}}π\\nFrais: {{fee}}π\\nNet: {{net}}π\\n\\n⏳ Traitement: 24-48h",
+      deposit_success: "✅ Dépôt de {{amount}}π effectué!",
+      sync_success: "✅ Synchronisation réussie!\\n{{count}} cours déverrouillés.",
+      sync_already_uptodate: "Votre progression est déjà à jour.",
+      kyc_required_staking: "⚠️ Staking réservé aux Pioneers vérifiés (KYC).",
+      kyc_required_purchase: "⚠️ Accès refusé : KYC requise pour les achats.",
+      pack_purchased: "🎉 Pack Débutant acheté!\\n\\nVous avez reçu:\\n• Avatar Premium 👑\\n• 2x Boost XP ⚡\\n• Badge Légendaire ⭐"
     }
   }
 };
@@ -117,12 +252,48 @@ const en = {
       error: "Error",
       success: "Success"
     },
+    general: {
+      connecting: "Connecting to Pi Network...",
+      welcome: "Welcome",
+      days: "days",
+      premium: "Premium",
+      freeTier: "Free",
+      upgradePremium: "Upgrade to Premium",
+      staking: "Staking",
+      month: "month",
+      subscribe: "Subscribe"
+    },
+    staking: {
+       title: "Pi Staking",
+       subtitle: "Earn passive rewards",
+       available: "Available to stake",
+       staked: "Currently staked",
+       earned: "Earned rewards",
+       start: "Start Staking",
+       unstake: "Unstake"
+    },
     nav: {
       courses: "Courses",
       leaderboard: "Leaderboard",
       social: "Social",
       shop: "Shop",
-      profile: "Profile"
+      profile_tab: "Profile"
+    },
+    wallet: {
+      title: "My Pi Wallet",
+      total_balance: "Total Balance",
+      connected: "Wallet Connected",
+      prompt_withdraw: "Amount to withdraw (Min: 0.001π):",
+      withdraw: "Withdraw",
+      prompt_deposit: "Amount to deposit (π):",
+      deposit: "Deposit"
+    },
+    leaderboard: {
+      title: "Top Pioneers",
+      subtitle: "Weekly leaderboard of top learners"
+    },
+    premium: {
+      banner_desc: "Unlock all courses + 2x XP Boost + 0% Fees"
     },
     stats: {
       level: "Level",
@@ -153,16 +324,31 @@ const en = {
       comments: "Comments",
       reply: "Reply",
       like: "Like",
-      no_posts: "No posts yet. Be the first to share!"
+      no_posts: "No posts yet. Be the first to share!",
+      subtitle: "Learn and grow together",
+      refer_friends: "Refer your friends",
+      refer_desc: "Earn up to 200 XP and 0.001π per friend!",
+      view_code: "View my code",
+      share_progress: "Share your progress",
+      post_placeholder: "Share your success, ask questions, help the community...",
+      earn_xp_hint: "💡 Earn +10 XP per post",
+      delete_tooltip: "Delete post",
+      comment_action: "Comment",
+      refer_title: "Refer your friends!",
+      refer_text: "Invite friends to join Pioneer Academy and earn rewards",
+      per_friend: "per friend",
+      share_link: "📤 Share my link"
     },
-    profile: {
+    profilePage: {
       title: "Pioneer Profile",
       settings: "Settings",
       language: "Language",
       notifications: "Notifications",
       sound: "Sounds",
       support: "Support / FAQ",
-      logout: "Logout"
+      logout: "Logout",
+      remove_pic: "Remove picture",
+      referral_code: "Referral Code"
     },
     ads: {
       limit_reached: "⏳ Limit reached: One sponsored retry every 6h.\\nCome back in {{hours}}h.",
@@ -185,7 +371,35 @@ const en = {
       link_copied: "✅ Link copied to clipboard!",
       link_copy_error: "❌ Unable to copy link",
       code_copied: "✅ Code copied!",
-      code_copy_error: "❌ Unable to copy code"
+      code_copy_error: "❌ Unable to copy code",
+      title: "Referral System",
+      subtitle: "Invite friends and earn rewards",
+      your_code: "Your Referral Code",
+      unique_code: "Unique Code:",
+      copy: "Copy",
+      share_link: "Share Link:",
+      share: "Share",
+      how_works_title: "How it works?",
+      how_works_desc: "Share your code or link with friends. They get +50 XP + 0.0001π on signup, and you earn rewards as they progress!",
+      stats_total: "Total Referrals",
+      stats_active: "Active Referrals",
+      stats_xp: "XP Earned",
+      stats_pi: "Pi Earned",
+      pending_rewards: "Pending Rewards",
+      claim_button: "Claim Now",
+      claiming: "Claiming...",
+      my_referrals: "My Referrals",
+      no_referrals: "No referrals yet",
+      start_sharing: "Share your code to start!",
+      milestones_title: "Collective Milestones",
+      tiers: {
+        five_active: "5 Active Referrals",
+        ten_active: "10 Active Referrals",
+        twentyfive_active: "25 Active Referrals",
+        fifty_active: "50 Active Referrals",
+        free_premium: "Free Premium 1 Month",
+        legendary_badge: "Legendary Badge"
+      }
     },
     shop: {
       insufficient_balance_detail: "⚠️ Insufficient Balance!\\n\\nCost: {{cost}}π\\nYour balance: {{balance}}π\\nMissing: {{missing}}π",
@@ -193,7 +407,63 @@ const en = {
       purchase_success: "✅ Purchase successful!\\n\\n{{productName}}{{extra}}",
       extra_energy: "\\n+{{amount}}⚡ added",
       extra_boost: "\\n🚀 Regeneration doubled for 24h",
-      extra_unlimited: "\\n♾️ Unlimited Energy activated for 7 days"
+      extra_unlimited: "\\n♾️ Unlimited Energy activated for 7 days",
+      items: {
+        avatar_premium: "Premium Avatar",
+        avatar_desc: "Stand out",
+        badge_legendary: "Legendary Badge",
+        badge_desc: "Exclusive status",
+        boost_xp: "XP Boost x2",
+        boost_desc: "24h boost",
+        pass_premium: "Premium Pass",
+        pass_desc: "Unlimited access",
+        pack_starter: "Starter Pack",
+        pack_desc: "Avatar + 2 Boosts + Badge"
+      },
+      subtitle: "Exchange your Pi for exclusive items",
+      your_balance: "Your balance",
+      buy: "Buy",
+      insufficient: "Insufficient",
+      special_packs: "Special Packs"
+    },
+    badges: {
+      guest: "Guest",
+      guest_desc: "Limited access - Login with Pi to unlock all features",
+      pioneer: "Pioneer",
+      pioneer_desc: "Verified Pioneer - Complete KYC to unlock premium features",
+      pioneer_kyc: "KYC Pioneer",
+      pioneer_kyc_desc: "Verified KYC Pioneer - Full access to all features",
+      locked_feature: "🔒 Feature Locked",
+      requires_status: "{{feature}} requires status",
+      upgrade_guest: "Login with Pi Network to access this feature.",
+      upgrade_kyc: "Complete your KYC to unlock this feature.",
+      benefits_title: "Benefits of {{status}} status:"
+    },
+    alerts: {
+      premium_welcome: "🎉 Welcome Premium!\\n\\n✨ Benefits activated:\\n• Exclusive courses unlocked\\n• Permanent 2x XP Boost\\n• 0% Withdrawal Fees\\n• Priority Support\\n• Premium Badge",
+      invalid_amount: "⚠️ Invalid amount!\\n\\nPlease enter a valid amount greater than 0.",
+      insufficient_balance: "⚠️ Insufficient Balance!",
+      staking_started: "✅ Staking started!\\n\\n💎 Amount: {{amount}}π\\n📅 Period: {{period}} days\\n📈 APR: {{apr}}%\\n\\n⏰ Rewards calculated automatically!",
+      no_stake: "⚠️ No Pi staked!\\n\\nYou must stake Pi before you can unstake.",
+      unstake_success: "✅ Unstake successful!\\n\\n💰 Total retrieved: {{total}}π\\n📊 Principal: {{principal}}π\\n🎁 Rewards: {{rewards}}π\\n\\n💡 You can now use your Pi!",
+      empty_post: "⚠️ Please write something!",
+      post_shared: "✅ Post shared!\\n+10 XP earned (Quota: {{count}}/3)",
+      post_shared_limit: "✅ Post shared!\\n(Daily XP quota reached)",
+      confirm_delete_post: "🗑️ Delete this post?\\n\\nThis action cannot be undone.",
+      image_type_error: "⚠️ Please select a valid image (JPG, PNG, GIF, etc.)",
+      image_size_error: "⚠️ Image too large! Maximum 2MB.",
+      profile_pic_updated: "✅ Profile picture updated!",
+      profile_pic_removed: "✅ Profile picture removed! Emoji avatar restored.",
+      copy_success: "✅ Link copied to clipboard!",
+      copy_fail: "❌ Unable to copy link. Please select and copy manually.",
+      wallet_linked: "✅ Wallet linked and verified!\\n\\n+{{xp}} XP\\n+{{pi}}π",
+      withdraw_success: "✅ Withdrawal successful!\\n\\nAmount: {{amount}}π\\nFee: {{fee}}π\\nNet: {{net}}π\\n\\n⏳ Processing: 24-48h",
+      deposit_success: "✅ Deposit of {{amount}}π successful!",
+      sync_success: "✅ Sync successful!\\n{{count}} courses unlocked.",
+      sync_already_uptodate: "Your progress is already up to date.",
+      kyc_required_staking: "⚠️ Staking reserved for Verified Pioneers (KYC).",
+      kyc_required_purchase: "⚠️ Access denied: KYC required for purchases.",
+      pack_purchased: "🎉 Starter Pack purchased!\\n\\nYou received:\\n• Premium Avatar 👑\\n• 2x XP Boost ⚡\\n• Legendary Badge ⭐"
     }
   }
 };

@@ -24,6 +24,12 @@ import { DecisionLab, DecisionScenario } from './components/education/DecisionLa
 import { DECISION_SCENARIOS } from './data/decisionScenarios';
 import { CoursesTab } from './components/education/CoursesTab';
 import { QuestionRandomizer } from './services/QuestionRandomizer';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import LeaderboardPage from './pages/LeaderboardPage';
+import SocialPage from './pages/SocialPage';
+import ShopPage from './pages/ShopPage';
+import ProfilePage from './pages/ProfilePage';
+import CoursesPage from './pages/CoursesPage';
 import { CooldownManager } from './services/CooldownManager';
 import { QuizResults } from './components/education/QuizResults';
 import RetrySystem, { RetryHistory } from './services/RetrySystem';
@@ -38,60 +44,7 @@ import './i18n'; // Initialize i18n config
 import { getCourses } from './data/courses'; // New dynamic loader
 
 // Translations
-const translations = {
-  en: {
-    connecting: "Connecting to Pi Network...",
-    welcome: "Welcome",
-    balance: "Balance",
-    level: "Level",
-    streak: "Streak",
-    days: "days",
-    courses: "Courses",
-    leaderboard: "Leaderboard",
-    social: "Social",
-    shop: "Shop",
-    staking: "Staking",
-    profile: "Profile",
-    premium: "Premium",
-    freeTier: "Free",
-    upgradePremium: "Upgrade to Premium",
-    stakingTitle: "Pi Staking",
-    stakingSubtitle: "Earn passive rewards",
-    availableToStake: "Available to stake",
-    currentlyStaked: "Currently staked",
-    earnedRewards: "Earned rewards",
-    startStaking: "Start Staking",
-    unstake: "Unstake",
-    month: "month",
-    subscribe: "Subscribe"
-  },
-  fr: {
-    connecting: "Connexion à Pi Network...",
-    welcome: "Bienvenue",
-    balance: "Solde",
-    level: "Niveau",
-    streak: "Série",
-    days: "jours",
-    courses: "Cours",
-    leaderboard: "Classement",
-    social: "Social",
-    shop: "Boutique",
-    staking: "Staking",
-    profile: "Profil",
-    premium: "Premium",
-    freeTier: "Gratuit",
-    upgradePremium: "Passer Premium",
-    stakingTitle: "Staking Pi",
-    stakingSubtitle: "Gagnez des récompenses passives",
-    availableToStake: "Disponible pour staking",
-    currentlyStaked: "En staking",
-    earnedRewards: "Récompenses gagnées",
-    startStaking: "Commencer le Staking",
-    unstake: "Retirer",
-    month: "mois",
-    subscribe: "S'abonner"
-  }
-};
+// Translations handled by i18n.ts
 
 
 const PI_GCV = 314.159;
@@ -116,7 +69,8 @@ const App = () => {
   const [kycStatus, setKycStatus] = useState<string>('none');
   const [loading, setLoading] = useState(false); // Used for async ops within screens 
   const [authError, setAuthError] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState('courses');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [language, setLanguage] = useState(i18n.language?.startsWith('en') ? 'en' : 'fr'); // Sync with i18n detection
   const [showWallet, setShowWallet] = useState(false);
   const [showStaking, setShowStaking] = useState(false);
@@ -310,7 +264,7 @@ const App = () => {
         question: "Comment identifier un faux compte 'Pi Support' sur les réseaux sociaux?",
         options: ["Il a le logo Pi", "Il vous contacte en premier par DM pour 'aider'", "Il publie des news", "Il a beaucoup d'abonnés"],
         correct: 1,
-        explanation: `Le ${t('profile.support')} officiel de Pi ne vous contactera JAMAIS en premier par message privé (DM) pour résoudre un problème de compte.`
+        explanation: `Le ${t('profilePage.support')} officiel de Pi ne vous contactera JAMAIS en premier par message privé (DM) pour résoudre un problème de compte.`
       }
     ]
   };
@@ -421,6 +375,8 @@ const App = () => {
 
 
 
+
+
   useEffect(() => {
     if (user) {
       // Calculate staking rewards
@@ -496,7 +452,7 @@ const App = () => {
     setIsPremium(true);
     setShowPremiumModal(false);
 
-    alert('🎉 Bienvenue Premium!\n\n✨ Avantages activés:\n• Cours exclusifs déverrouillés\n• Boost XP permanent x2\n• Frais de retrait 0%\n• Support prioritaire\n• Badge Premium');
+    alert(t('alerts.premium_welcome'));
   };
 
   const handleStaking = (amount: number, period: number) => {
@@ -522,7 +478,11 @@ const App = () => {
       stakingPeriod: period
     }));
 
-    alert(`✅ Staking démarré!\n\n💎 Montant: ${roundedAmount.toFixed(6)}π\n📅 Période: ${period} jours\n📈 APR: ${period === 30 ? '5%' : period === 60 ? '8%' : '12%'}\n\n⏰ Récompenses calculées automatiquement!`);
+    alert(t('alerts.staking_started', { 
+      amount: roundedAmount.toFixed(6), 
+      period: period, 
+      apr: period === 30 ? '5' : period === 60 ? '8' : '12' 
+    }));
     setShowStaking(false);
   };
 
@@ -546,13 +506,17 @@ const App = () => {
       stakingPeriod: null
     }));
 
-    alert(`✅ Unstake réussi!\n\n💰 Total récupéré: ${total.toFixed(6)}π\n📊 Principal: ${roundedStaking.toFixed(6)}π\n🎁 Récompenses: ${roundedRewards.toFixed(6)}π\n\n💡 Vous pouvez maintenant utiliser vos Pi!`);
+    alert(t('alerts.unstake_success', {
+      total: total.toFixed(6),
+      principal: roundedStaking.toFixed(6),
+      rewards: roundedRewards.toFixed(6)
+    }));
     setShowStaking(false);
   };
 
   const handlePublish = () => {
     if (!postContent.trim()) {
-      alert('⚠️ Veuillez écrire quelque chose!');
+      alert(t('alerts.empty_post'));
       return;
     }
 
@@ -594,9 +558,9 @@ const App = () => {
               lastPostDate: today
           };
         });
-        alert('✅ Publication partagée!\n+10 XP gagné (Quota: ' + ((userProgress.dailyPostCount || 0) + 1) + '/3)');
+        alert(t('alerts.post_shared', { count: (userProgress.dailyPostCount || 0) + 1 }));
     } else {
-        alert('✅ Publication partagée!\n(Quota XP journalier atteint)');
+        alert(t('alerts.post_shared_limit'));
     }
     
     setPostContent('');
@@ -671,7 +635,7 @@ const App = () => {
   };
 
   const handleDeletePost = (postId: number) => {
-    if (window.confirm('🗑️ Supprimer cette publication ?\n\nCette action est irréversible.')) {
+    if (window.confirm(t('alerts.confirm_delete_post'))) {
       setSocialPosts(prev => prev.filter(post => post.id !== postId));
       // Also remove all comments associated with this post
       setPostComments(prev => {
@@ -708,13 +672,13 @@ const App = () => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('⚠️ Veuillez sélectionner une image valide (JPG, PNG, GIF, etc.)');
+      alert(t('alerts.image_type_error'));
       return;
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      alert('⚠️ L\'image est trop grande! Maximum 2MB.');
+      alert(t('alerts.image_size_error'));
       return;
     }
 
@@ -723,25 +687,21 @@ const App = () => {
     reader.onloadend = async () => {
       const result = reader.result as string;
       setProfilePicture(result);
-      
-      // Force immediate save to ensure persistence
+      // Save immediately
       if (user) {
-        await saveUserProfile(user.uid, {
-          userProgress,
-          isPremium,
-          socialPosts,
-          profilePicture: result
-        });
+         saveUserProfile(user.uid, { profilePicture: result });
       }
-      
-      alert('✅ Photo de profil mise à jour!');
+      alert(t('alerts.profile_pic_updated'));
     };
     reader.readAsDataURL(file);
   };
 
   const removeProfilePicture = () => {
     setProfilePicture(null);
-    alert('✅ Photo de profil supprimée! Avatar emoji restauré.');
+    if (user) {
+        saveUserProfile(user.uid, { profilePicture: null });
+    }
+    alert(t('alerts.profile_pic_removed'));
   };
 
   const startCourse = (course: any) => {
@@ -1082,7 +1042,7 @@ const App = () => {
     if (!selectedOption) return;
     
     // Calculate rewards based on decision quality
-    const xpReward = selectedOption.impact('stats.xp') || selectedLayer.xpReward;
+    const xpReward = selectedOption.impact.xp || selectedLayer.xpReward;
     const repReward = selectedOption.impact.reputation || 0;
     const piReward = selectedOption.impact.pi || 0;
     
@@ -1132,7 +1092,7 @@ const App = () => {
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(text);
-        alert('✅ Lien copié dans le presse-papier !');
+        alert(t('alerts.copy_success'));
       } else {
         throw new Error('Clipboard API unavailable');
       }
@@ -1144,10 +1104,10 @@ const App = () => {
       textArea.select();
       try {
         document.execCommand('copy');
-        alert('✅ Lien copié dans le presse-papier ! (Fallback)');
+        alert(t('alerts.copy_success_fallback'));
       } catch (err) {
         console.error('Failed to copy text: ', err);
-        alert('❌ Impossible de copier le lien. Veuillez le sélectionner et copier manuellement.');
+        alert(t('alerts.copy_fail'));
       }
       document.body.removeChild(textArea);
     }
@@ -1343,12 +1303,36 @@ const App = () => {
 
 
               
-              {/* 🌍 Language Toggle (Simplified & Functional) */}
-
-
-
-            <button
-              onClick={() => setActiveTab('profile')}
+            {/* 🌍 Language Toggle (Simplified & Functional) */}
+            <div className="flex bg-white/10 rounded-lg p-1 mr-2">
+              <button
+                onClick={() => {
+                  i18n.changeLanguage('fr');
+                  setLanguage('fr');
+                }}
+                className={`px-2 py-1 rounded-md text-xs font-bold transition ${
+                  language === 'fr' 
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm' 
+                    : 'text-white/50 hover:text-white'
+                }`}
+              >
+                FR
+              </button>
+              <button
+                onClick={() => {
+                  i18n.changeLanguage('en');
+                  setLanguage('en');
+                }}
+                className={`px-2 py-1 rounded-md text-xs font-bold transition ${
+                  language === 'en' 
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm' 
+                    : 'text-white/50 hover:text-white'
+                }`}
+              >
+                ENG
+              </button>
+            </div>            <button
+              onClick={() => navigate('/profile')}
               className="bg-white/10 px-3 py-2 rounded-lg hover:bg-white/20 flex items-center gap-2"
             >
               {profilePicture ? (
@@ -1362,7 +1346,7 @@ const App = () => {
               )}
               <div className="text-left hidden md:block">
                 <p className="text-white font-semibold text-sm">{user?.username}</p>
-                <p className="text-yellow-400 text-xs">{isPremium ? '👑 Premium' : t('freeTier')}</p>
+                <p className="text-yellow-400 text-xs">{isPremium ? `👑 ${t('general.premium')}` : t('general.freeTier')}</p>
               </div>
             </button>
             
@@ -1379,7 +1363,7 @@ const App = () => {
           <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-2xl p-8 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-6">
               <Crown size={64} className="text-yellow-400 mx-auto mb-4" />
-              <h3 className="text-white text-3xl font-bold mb-2">{t('upgradePremium')}</h3>
+              <h3 className="text-white text-3xl font-bold mb-2">{t('general.upgradePremium')}</h3>
               <p className="text-white/90">Débloquez TOUS les avantages exclusifs</p>
             </div>
 
@@ -1415,7 +1399,7 @@ const App = () => {
                   <p className="text-white/80 text-sm">≈ ${(0.01 * PI_GCV).toFixed(2)} USD</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-semibold">par {t('month')}</p>
+                  <p className="text-white font-semibold">par {t('general.month')}</p>
                 </div>
               </div>
             </div>
@@ -1424,7 +1408,7 @@ const App = () => {
               onClick={handlePremiumUpgrade}
               className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-4 rounded-xl text-lg hover:scale-105 transition mb-3"
             >
-              {t('subscribe')}
+              {t('general.subscribe')}
             </button>
 
             <button
@@ -1442,21 +1426,21 @@ const App = () => {
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={() => setShowStaking(false)}>
           <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-2xl font-bold">💎 {t('stakingTitle')}</h3>
+              <h3 className="text-white text-2xl font-bold">💎 {t('staking.title')}</h3>
               <button onClick={() => setShowStaking(false)} className="text-white"><X size={24} /></button>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-purple-300 text-xs mb-1">Disponible</p>
+                <p className="text-purple-300 text-xs mb-1">{t('staking.available')}</p>
                 <p className="text-white font-bold">{userProgress.piBalance.toFixed(4)}π</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-purple-300 text-xs mb-1">En Staking</p>
+                <p className="text-purple-300 text-xs mb-1">{t('staking.staked')}</p>
                 <p className="text-yellow-400 font-bold">{userProgress.stakingBalance.toFixed(4)}π</p>
               </div>
               <div className="bg-white/10 rounded-xl p-3 text-center">
-                <p className="text-purple-300 text-xs mb-1">Récompenses</p>
+                <p className="text-purple-300 text-xs mb-1">{t('staking.earned')}</p>
                 <p className="text-green-400 font-bold">{userProgress.stakingRewards.toFixed(6)}π</p>
               </div>
             </div>
@@ -1489,7 +1473,7 @@ const App = () => {
                   onClick={handleUnstake}
                   className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-4 rounded-xl hover:scale-105 transition"
                 >
-                  🔓 {t('unstake')}
+                  {t('staking.unstake')}
                 </button>
               </div>
             ) : (
@@ -1517,7 +1501,7 @@ const App = () => {
                       >
                         <div className="flex justify-between items-center text-white">
                           <div className="text-left">
-                            <p className="font-bold">{plan.days} jours</p>
+                            <p className="font-bold">{plan.days} {t('general.days')}</p>
                             <p className="text-xs opacity-80">Flexible</p>
                           </div>
                           <div className="text-right">
@@ -1543,13 +1527,13 @@ const App = () => {
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={() => setShowWallet(false)}>
           <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-white text-2xl font-bold">💳 Mon Wallet Pi</h3>
+              <h3 className="text-white text-2xl font-bold">💳 {t('wallet.title')}</h3>
               <button onClick={() => setShowWallet(false)} className="text-white hover:text-yellow-400"><X size={24} /></button>
             </div>
 
             {/* Balance Card */}
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 mb-6 text-black">
-              <p className="text-sm opacity-80 mb-1">Balance totale</p>
+              <p className="text-sm opacity-80 mb-1">{t('wallet.total_balance')}</p>
               <p className="text-4xl font-bold mb-2">{userProgress.piBalance.toFixed(6)}π</p>
               <p className="text-lg font-semibold">≈ ${(userProgress.piBalance * PI_GCV).toFixed(2)} USD</p>
               <p className="text-xs opacity-80 mt-2">GCV: $314.159 / π</p>
@@ -1571,9 +1555,9 @@ const App = () => {
                           piBalance: prev.piBalance + (rewards.pi || 0),
                           xp: prev.xp + (rewards.xp || 0)
                         }));
-                        alert(`✅ Wallet lié et vérifié!\n\n+${rewards.xp} XP\n+${rewards.pi}π`);
+                        alert(t('alerts.wallet_linked', { xp: rewards.xp, pi: rewards.pi }));
                     } else {
-                        alert(`✅ Wallet lié avec succès!`);
+                        alert(t('common.success'));
                     }
                   }}
                 />
@@ -1582,7 +1566,7 @@ const App = () => {
               <div className="bg-green-500/20 rounded-xl p-4 mb-4 border border-green-400/30">
                 <p className="text-green-400 font-semibold mb-2 flex items-center gap-2">
                   <CheckCircle size={20} />
-                  Wallet connecté
+                  {t('wallet.connected')}
                 </p>
                 <p className="text-white text-sm font-mono break-all">{walletAddress}</p>
               </div>
@@ -1592,17 +1576,17 @@ const App = () => {
             <div className="grid grid-cols-2 gap-3 mb-6">
               <button
                 onClick={() => {
-                  const amount = prompt('Montant à retirer (Min: 0.001π):');
+                  const amount = prompt(t('wallet.prompt_withdraw'));
                   if (amount && parseFloat(amount) > 0) {
                     const val = parseFloat(amount);
                     if (val > userProgress.piBalance) {
-                      alert('⚠️ Solde insuffisant!');
+                      alert(t('alerts.insufficient_balance'));
                       return;
                     }
                     const fee = isPremium ? 0 : val * 0.02;
                     const net = val - fee;
                     setUserProgress((prev: any) => ({ ...prev, piBalance: prev.piBalance - val }));
-                    alert(`✅ Retrait effectué!\n\nMontant: ${val}π\nFrais: ${fee.toFixed(6)}π\nNet: ${net.toFixed(6)}π\n\n⏳ Traitement: 24-48h`);
+                    alert(t('alerts.withdraw_success', { amount: val, fee: fee.toFixed(6), net: net.toFixed(6) }));
                   }
                 }}
                 disabled={!walletAddress}
@@ -1611,19 +1595,19 @@ const App = () => {
                   : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                   }`}
               >
-                💸 Retirer
+                💸 {t('wallet.withdraw')}
               </button>
               <button
                 onClick={() => {
-                  const amount = prompt('Montant à déposer (π):');
+                  const amount = prompt(t('wallet.prompt_deposit'));
                   if (amount && parseFloat(amount) > 0) {
                     setUserProgress((prev: any) => ({ ...prev, piBalance: prev.piBalance + parseFloat(amount) }));
-                    alert(`✅ Dépôt de ${amount}π effectué!`);
+                    alert(t('alerts.deposit_success', { amount }));
                   }
                 }}
                 className="bg-gradient-to-r from-blue-400 to-cyan-500 text-black py-3 rounded-lg font-bold hover:scale-105 transition"
               >
-                💰 Déposer
+                💰 {t('wallet.deposit')}
               </button>
             </div>
 
@@ -1631,10 +1615,10 @@ const App = () => {
             <div className="bg-blue-500/20 rounded-lg p-3 border border-blue-400/30">
               <p className="text-blue-300 text-xs">
                 💡 <strong>Infos:</strong><br />
-                • Minimum retrait: 0.001π<br />
-                • Frais: {isPremium ? '0%' : '2%'} {isPremium && '(Premium)'}<br />
-                • Délai: 24-48h<br />
-                • KYC requis pour +1π
+                • Minimum: 0.001π<br />
+                • {isPremium ? t('general.premium') : t('general.freeTier')} Fee: {isPremium ? '0%' : '2%'}<br />
+                • 24-48h<br />
+                • KYC +1π
               </p>
             </div>
           </div>
@@ -1647,7 +1631,7 @@ const App = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-white/10 rounded-xl p-3 md:p-4 cursor-pointer hover:bg-white/15" onClick={() => setShowWallet(true)}>
-            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t('stats.balance')}</p>
+            <p className="text-purple-300 text-xs mb-1">{t('stats.balance')}</p>
             <p className="text-white text-lg md:text-xl font-bold truncate">{userProgress.piBalance.toFixed(4)}π</p>
             <p className="text-green-400 text-[10px] md:text-xs truncate">≈ ${(userProgress.piBalance * PI_GCV).toFixed(2)}</p>
           </div>
@@ -1657,7 +1641,7 @@ const App = () => {
             {isPremium && <span className="text-yellow-400 text-[10px] md:text-xs">👑 Premium</span>}
           </div>
           <div className="bg-white/10 rounded-xl p-3 md:p-4">
-            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t.streak}</p>
+            <p className="text-purple-300 text-xs mb-1">{t('stats.streak')}</p>
             <p className="text-white text-lg md:text-xl font-bold flex items-center gap-1">
               <Flame size={16} className="text-orange-400 md:w-5 md:h-5" />
               {userProgress.streak}
@@ -1665,25 +1649,25 @@ const App = () => {
           </div>
           <div className="bg-white/10 rounded-xl p-3 md:p-4 cursor-pointer hover:bg-white/15" onClick={() => {
             if (kycStatus !== 'verified') {
-              alert("⚠️ Staking réservé aux Pioneers vérifiés (KYC).");
+              alert(t('alerts.staking_kyc_required'));
               return;
             }
             setShowStaking(true);
           }}>
-            <p className="text-purple-300 text-[10px] md:text-xs mb-1">{t.staking}</p>
+            <p className="text-purple-300 text-xs mb-1">{t('general.staking')}</p>
             <p className="text-yellow-400 text-lg md:text-xl font-bold truncate">{userProgress.stakingBalance.toFixed(4)}π</p>
             <p className="text-green-400 text-[10px] md:text-xs truncate">+{userProgress.stakingRewards.toFixed(6)}π</p>
           </div>
         </div>
 
         {/* Premium Banner */}
-        {!isPremium && activeTab === 'courses' && (
+        {!isPremium && location.pathname === '/' && (
           <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 rounded-2xl p-6 mb-6 cursor-pointer hover:scale-105 transition" onClick={() => setShowPremiumModal(true)}>
             <h4 className="text-white text-2xl font-bold mb-2 flex items-center gap-2">
               <Crown size={28} />
-              {t.upgradePremium}
+              {t('general.upgradePremium')}
             </h4>
-            <p className="text-white/90 mb-4">Débloquez tous les cours + Boost XP x2 + Frais 0%</p>
+            <p className="text-white/90 mb-4">{t('premium.banner_desc')}</p>
             <div className="flex items-center gap-2">
               <span className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-bold">0.01π/mois</span>
               <span className="text-white text-sm">≈ ${(0.01 * PI_GCV).toFixed(2)} USD</span>
@@ -1691,99 +1675,77 @@ const App = () => {
           </div>
         )}
 
-        {/* Courses Tab with Progressive Unlocking */}
-        {activeTab === 'courses' && !showCourseDetail && (
-          <CoursesTab
-            userProgress={userProgress}
-            onSelectCourse={(course) => {
-              setSelectedCourse(course);
-              setShowCourseDetail(true);
-            }}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={
+              <CoursesPage 
+                userProgress={userProgress}
+                onSelectCourse={(course: any) => {
+                  setSelectedCourse(course);
+                  setShowCourseDetail(true);
+                }}
+              />
+          } />
+          <Route path="/leaderboard" element={
+            <LeaderboardPage 
+                user={user}
+                userProgress={userProgress}
+                profilePicture={profilePicture}
+            />
+          } />
+          <Route path="/social" element={
+             <SocialPage 
+                user={user}
+                userProgress={userProgress}
+                socialPosts={socialPosts}
+                postContent={postContent}
+                setPostContent={setPostContent}
+                handlePublish={handlePublish}
+                handleDeletePost={handleDeletePost}
+                handleLikeComment={handleLikeComment}
+                handleAddComment={handleAddComment}
+                handleDeleteComment={handleDeleteComment}
+                postComments={postComments}
+                expandedPosts={expandedPosts}
+                setExpandedPosts={setExpandedPosts}
+                setShowReferralDashboard={setShowReferralDashboard}
+                copyToClipboard={copyToClipboard}
+             />
+          } />
+          <Route path="/shop" element={
+             <ShopPage 
+                userProgress={userProgress}
+                setUserProgress={setUserProgress}
+                piGcv={PI_GCV}
+                kycStatus={kycStatus}
+             />
+          } />
+          <Route path="/profile" element={
+             <ProfilePage 
+                user={user}
+                userProgress={userProgress}
+                profilePicture={profilePicture}
+                handleProfilePictureUpload={handleProfilePictureUpload}
+                removeProfilePicture={removeProfilePicture}
+                copyToClipboard={copyToClipboard}
+                handleLogout={handleLogout}
+                setShowWallet={setShowWallet}
+             />
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
 
-        {/* Leaderboard Tab */}
-        {activeTab === 'leaderboard' && (
-          <div className="space-y-4">
-            <div className="text-center mb-6">
-              <Trophy size={48} className="text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-white text-3xl font-bold mb-2">🏆 Top Pioneers</h3>
-              <p className="text-purple-300">Classement hebdomadaire des meilleurs apprenants</p>
-            </div>
 
-            {[
-              { rank: 1, username: 'PiMaster2024', xp: 5420, piEarned: 0.0172, avatar: '👑' },
-              { rank: 2, username: 'CryptoLearner', xp: 4890, piEarned: 0.0156, avatar: '🎓' },
-              { rank: 3, username: 'BlockchainPro', xp: 4350, piEarned: 0.0138, avatar: '⭐' },
-              { rank: 4, username: 'WebThreeWizard', xp: 3920, piEarned: 0.0125, avatar: '🧙' },
-              { rank: 5, username: 'DigitalPioneer', xp: 3540, piEarned: 0.0113, avatar: '🌟' },
-              { rank: 6, username: user?.username, xp: userProgress.xp, piEarned: userProgress.piBalance, avatar: user?.avatar }
-            ].map((player, index) => (
-              <div
-                key={player.rank}
-                className={`bg-white/10 backdrop-blur-lg rounded-xl p-5 flex items-center gap-4 transition-all hover:scale-105 ${index < 3 ? 'border-2' : ''
-                  } ${player.rank === 1 ? 'border-yellow-400 shadow-xl shadow-yellow-400/20' :
-                    player.rank === 2 ? 'border-gray-300 shadow-xl shadow-gray-300/20' :
-                      player.rank === 3 ? 'border-orange-400 shadow-xl shadow-orange-400/20' : ''
-                  }`}
-              >
-                <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-2xl ${player.rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-black' :
-                  player.rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-black' :
-                    player.rank === 3 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-black' :
-                      'bg-white/20 text-white'
-                  }`}>
-                  {player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : player.rank}
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-white font-bold text-lg">{player.username}</p>
-                    {player.rank <= 3 && <Star size={16} className="text-yellow-400" />}
-                  </div>
-                  <div className="flex gap-4 text-sm">
-                    <span className="text-purple-300">
-                      <span className="font-semibold text-white">{player.xp}</span> XP
-                    </span>
-                    <span className="text-orange-300">
-                      <span className="font-semibold text-white">{player.piEarned.toFixed(6)}</span> π
-                    </span>
-                  </div>
-                </div>
-                {/* Show profile picture for current user, emoji for others */}
-                {player.username === user?.username && profilePicture ? (
-                  <img
-                    src={profilePicture}
-                    alt="Profile"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-yellow-400"
-                  />
-                ) : (
-                  <div className="text-4xl">{player.avatar}</div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
 
-        {/* Social Tab */}
-        {activeTab === 'social' && (
-          <div className="space-y-4">
-            <div className="text-center mb-6">
-              <Users size={48} className="text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-white text-3xl font-bold mb-2">💥 Communauté</h3>
-              <p className="text-purple-300">Apprenez et grandissez ensemble</p>
-            </div>
 
-            {/* Referral Banner */}
-            <div className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-xl p-6 mb-6 border border-white/20 shadow-lg cursor-pointer hover:scale-105 transition-transform" onClick={() => setShowReferralDashboard(true)}>
-              <div className="flex items-center justify-between">
                 <div>
                   <h4 className="text-white font-bold text-xl mb-1 flex items-center gap-2">
                     <Users size={24} className="text-yellow-400" />
-                    Parrainez vos amis
+                    {t('social.refer_friends')}
                   </h4>
-                  <p className="text-purple-200 text-sm">Gagnez jusqu'à 200 XP et 0.001π par ami !</p>
+                  <p className="text-purple-200 text-sm">{t('social.refer_desc')}</p>
                 </div>
                 <button className="bg-white text-purple-600 px-4 py-2 rounded-lg font-bold text-sm">
-                  Voir mon code
+                  {t('social.view_code')}
                 </button>
               </div>
             </div>
@@ -1792,10 +1754,10 @@ const App = () => {
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6">
               <h4 className="text-white font-bold text-xl mb-4 flex items-center gap-2">
                 <Star size={24} className="text-yellow-400" />
-                Partagez votre progression
+                {t('social.share_progress')}
               </h4>
               <textarea
-                placeholder="Partagez vos réussites, posez des questions, aidez la communauté..."
+                placeholder={t('social.post_placeholder')}
                 className="w-full bg-black/30 text-white rounded-lg p-4 mb-3 min-h-[100px] border border-white/20 focus:border-yellow-400 focus:outline-none"
                 maxLength={500}
                 value={postContent}
@@ -1816,12 +1778,12 @@ const App = () => {
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-purple-300 text-sm">💡 Gagnez +10 XP par publication</span>
+                <span className="text-purple-300 text-sm">{t('social.earn_xp_hint')}</span>
                 <button
                   onClick={handlePublish}
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-6 py-2 rounded-lg font-bold hover:scale-105 transition"
                 >
-                  📤 Publier
+                  📤 {t('social.publish')}
                 </button>
               </div>
             </div>
@@ -1855,7 +1817,7 @@ const App = () => {
                             <button
                               onClick={() => handleDeletePost(post.id)}
                               className="text-red-400/60 hover:text-red-400 transition"
-                              title="Supprimer la publication"
+                              title={t('social.delete_tooltip')}
                             >
                               <X size={20} />
                             </button>
@@ -1884,7 +1846,7 @@ const App = () => {
                                 });
                             }}
                           >
-                            💬 {(postComments[String(post.id)] || []).length || 'Commenter'}
+                            💬 {(postComments[String(post.id)] || []).length || t('social.comment_action')}
                             {(postComments[String(post.id)] || []).length > 0 && (
                                 <span className="ml-1 text-xs">
                                     {expandedPosts.has(String(post.id)) ? '▼' : '▶'}
@@ -1916,48 +1878,14 @@ const App = () => {
               </div>
             </div>
 
-            {/* Referral */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-black">
-              <Users size={48} className="mx-auto mb-4" />
-              <h4 className="text-2xl font-bold mb-2 text-center">Parrainez vos amis!</h4>
-              <p className="text-center mb-4 opacity-90">
-                Invitez vos amis à rejoindre Pioneer Academy et gagnez des récompenses
-              </p>
-              <div className="bg-black/20 rounded-lg p-4 mb-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <p className="text-3xl font-bold">50 XP</p>
-                    <p className="text-sm opacity-80">par ami</p>
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold">0.0001π</p>
-                    <p className="text-sm opacity-80">bonus</p>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => copyToClipboard(`https://piacademy.com/ref/${userProgress.referralCode}`)}
-                className="bg-black text-white px-6 py-3 rounded-lg font-bold w-full hover:bg-gray-900 transition"
-              >
-                📤 Partager mon lien
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* Shop Tab */}
-        {activeTab === 'shop' && (
-          <div className="space-y-4">
-            <div className="text-center mb-6">
-              <Gift size={48} className="text-yellow-400 mx-auto mb-3" />
-              <h3 className="text-white text-3xl font-bold mb-2">🎁 Boutique</h3>
-              <p className="text-purple-300">Échangez vos Pi contre des items exclusifs</p>
-            </div>
+
+
 
             <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-4 text-black mb-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-sm opacity-80">Votre balance</p>
+                  <p className="text-sm opacity-80">{t('shop.your_balance')}</p>
                   <p className="text-3xl font-bold">{userProgress.piBalance.toFixed(6)}π</p>
                   <p className="text-sm opacity-80">≈ ${(userProgress.piBalance * PI_GCV).toFixed(2)} USD</p>
                 </div>
@@ -1965,12 +1893,11 @@ const App = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
               {[
-                { name: 'Avatar Premium', cost: 0.001, icon: '👑', description: 'Démarquez-vous' },
-                { name: 'Badge Légendaire', cost: 0.002, icon: '⭐', description: 'Statut exclusif' },
-                { name: 'Boost XP x2', cost: 0.003, icon: '⚡', description: '24h de boost' },
-                { name: 'Pass Premium', cost: 0.005, icon: '💎', description: 'Accès illimité' }
+                { name: t('shop.items.avatar_premium'), cost: 0.001, icon: '👑', description: t('shop.items.avatar_desc') },
+                { name: t('shop.items.badge_legendary'), cost: 0.002, icon: '⭐', description: t('shop.items.badge_desc') },
+                { name: t('shop.items.boost_xp'), cost: 0.003, icon: '⚡', description: t('shop.items.boost_desc') },
+                { name: t('shop.items.pass_premium'), cost: 0.005, icon: '💎', description: t('shop.items.pass_desc') }
               ].map((item, i) => (
                 <div key={i} className="bg-white/10 backdrop-blur-lg rounded-xl p-4 hover:bg-white/20 transition-all hover:scale-105">
                   <div className="text-center mb-3">
@@ -1985,14 +1912,14 @@ const App = () => {
                   <button
                     onClick={() => {
                       if (kycStatus !== 'verified') {
-                        alert(`⚠️ Accès refusé : ${t('profile.notifications')} KYC requise pour les achats.`);
+                        alert(t('alerts.shop_kyc_required'));
                         return;
                       }
                       if (userProgress.piBalance >= item.cost) {
                         setUserProgress((prev: any) => ({ ...prev, piBalance: prev.piBalance - item.cost }));
-                        alert(`✅ ${item.name} acheté!`);
+                        alert(t('alerts.item_purchased', { item: item.name }));
                       } else {
-                        alert('⚠️ Solde insuffisant!');
+                        alert(t('alerts.insufficient_balance'));
                       }
                     }}
                     className={`w-full font-bold py-2 rounded-lg transition ${userProgress.piBalance >= item.cost
@@ -2000,19 +1927,19 @@ const App = () => {
                       : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       }`}
                   >
-                    {userProgress.piBalance >= item.cost ? 'Acheter' : 'Insuffisant'}
+                    {userProgress.piBalance >= item.cost ? t('shop.buy') : t('shop.insufficient')}
                   </button>
                 </div>
               ))}
             </div>
 
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 mt-6">
-              <h4 className="text-white font-bold text-xl mb-4">🎯 Packs Spéciaux</h4>
+              <h4 className="text-white font-bold text-xl mb-4">🎯 {t('shop.special_packs')}</h4>
               <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-4 border border-purple-400/30">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="text-white font-bold text-lg">🚀 Pack Débutant</p>
-                    <p className="text-purple-300 text-sm">Avatar + 2 Boosts + Badge</p>
+                    <p className="text-white font-bold text-lg">🚀 {t('shop.items.pack_starter')}</p>
+                    <p className="text-purple-300 text-sm">{t('shop.items.pack_desc')}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-yellow-400 font-bold">0.008π</p>
@@ -2023,14 +1950,13 @@ const App = () => {
                   onClick={() => {
                     if (userProgress.piBalance >= 0.008) {
                       setUserProgress((prev: any) => ({ ...prev, piBalance: prev.piBalance - 0.008 }));
-                      alert('🎉 Pack Débutant acheté!\n\nVous avez reçu:\n• Avatar Premium 👑\n• 2x Boost XP ⚡\n• Badge Légendaire ⭐');
+                      alert(t('alerts.pack_purchased'));
                     } else {
-                      alert('⚠️ Solde insuffisant!');
+                      alert(t('alerts.insufficient_balance'));
                     }
                   }}
-                  className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold py-2 px-4 rounded-lg w-full hover:scale-105 transition"
                 >
-                  Économisez 33%
+                  {t('shop.buy_pack')}
                 </button>
               </div>
             </div>
@@ -2038,17 +1964,7 @@ const App = () => {
         )}
 
         {/* Profile Tab */}
-        {activeTab === 'profile' && (
-           <div className="space-y-4">
-               <div className="text-center mb-6">
-                 {/* Profile Picture */}
-                 <div className="relative inline-block mb-4">
-                   {profilePicture ? (
-                     <img src={profilePicture} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-yellow-400" />
-                   ) : (
-                     <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-4 border-yellow-400 overflow-hidden shadow-lg shadow-purple-500/30">
-                       <span className="text-7xl leading-none select-none filter drop-shadow-md pb-2">{user?.avatar}</span>
-                     </div>
+        {activeTab === 'user_profile' && (
                    )}
                    
                    {/* Upload Button */}
@@ -2058,15 +1974,15 @@ const App = () => {
                    </label>
 
                    {/* Remove Picture Button */}
-                   {profilePicture && (
-                     <button onClick={removeProfilePicture} className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 cursor-pointer transition shadow-lg" title="Supprimer la photo">
-                       <Trash2 size={16} />
-                     </button>
-                   )}
+                    {profilePicture && (
+                      <button onClick={removeProfilePicture} className="absolute top-0 right-0 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 cursor-pointer transition shadow-lg" title={t('profilePage.remove_pic')}>
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                  </div>
 
                  <h3 className="text-white text-3xl font-bold mb-2">{user?.username}</h3>
-                 <p className="text-purple-300">{t('profile.title')}</p>
+                 <p className="text-purple-300">{t('profilePage.title')}</p>
                  
                  <div className="bg-white/10 rounded-lg p-3 mt-3 inline-block">
                    <p className="text-purple-300 text-xs mb-1">User ID</p>
@@ -2093,23 +2009,7 @@ const App = () => {
                  </div>
                </div>
 
-               {/* ⚙️ Settings / Language Switch */}
-               <div className="mb-6 border-t border-b border-white/10 py-4">
-                   <h4 className="text-white/70 text-sm font-bold uppercase tracking-widest mb-3 flex items-center justify-center gap-2">
-                     <Globe size={14} />
-                     {t('profile.settings') || 'Settings'}
-                   </h4>
-                   
-                   <button onClick={toggleLanguage} className="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-between group">
-                     <span className="flex items-center gap-3">
-                       <span className="text-2xl">{language === 'fr' ? '🇫🇷' : '🇺🇸'}</span>
-                       <span className="group-hover:text-yellow-400 transition-colors">{t('profile.language') || 'Language'}</span>
-                     </span>
-                     <span className="text-white/50 text-sm flex items-center gap-1 group-hover:text-white transition-colors">
-                       {language === 'fr' ? 'Français' : 'English'} <ChevronRight size={16} />
-                     </span>
-                   </button>
-               </div>
+
 
                <div className="space-y-3">
                    {/* XP Card */}
@@ -2135,7 +2035,7 @@ const App = () => {
                    
                    {/* Referral */}
                    <div className="bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-xl p-4 border border-green-400/30">
-                   <p className="text-green-400 font-semibold mb-2 flex items-center gap-2"><Share2 size={16} /> Code de Parrainage</p>
+                   <p className="text-green-400 font-semibold mb-2 flex items-center gap-2"><Share2 size={16} /> {t('profilePage.referral_code')}</p>
                    <div className="flex items-center gap-2">
                        <p className="text-white font-mono font-bold text-lg flex-1">{userProgress.referralCode}</p>
                        <button onClick={() => copyToClipboard(userProgress.referralCode)} className="bg-green-400 text-black px-3 py-1 rounded-lg font-bold"><Copy size={16} /></button>
@@ -2143,40 +2043,11 @@ const App = () => {
                    </div>
                </div>
 
-               {/* 🔄 Progression Sync */}
-               <div className="bg-blue-500/20 border border-blue-500/30 rounded-xl p-4 mt-6 text-center">
-                 <p className="text-blue-400 font-bold mb-2 text-sm flex items-center justify-center gap-2"><Target size={16} /> Synchronisation de Progression</p>
-                 <p className="text-gray-300 text-xs mb-3">Si des cours restent verrouillés malgré votre niveau élevé, utilisez cet outil.</p>
-                 <button onClick={() => {
-                     const coursesToMark = [];
-                     if (userProgress.level >= 2 && userProgress.xp >= 100) coursesToMark.push('pi-intro-101');
-                     if (userProgress.level >= 3 && userProgress.xp >= 300) coursesToMark.push('pi-wallet-101');
-                     if (userProgress.level >= 4 && userProgress.xp >= 500) coursesToMark.push('safety-101');
-                     if (userProgress.level >= 5 && userProgress.xp >= 800) coursesToMark.push('kyc-101');
-                     const newCompletions = coursesToMark.filter(id => !userProgress.completedCourses.includes(id));
-                     if (newCompletions.length > 0) {
-                       setUserProgress((prev: any) => ({ ...prev, completedCourses: [...prev.completedCourses, ...newCompletions] }));
-                       alert(`✅ Synchronisation réussie!\n${newCompletions.length} cours déverrouillés.`);
-                     } else {
-                       alert('Votre progression est déjà à jour.');
-                     }
-                   }}
-                   className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition text-sm flex items-center justify-center gap-2">
-                   <Target size={16} /> Synchroniser Maintenant
-                 </button>
-               </div>
+
 
                {/* Déconnexion Button */}
                <div className="mt-4">
-                 <button 
-                     onClick={handleLogout}
-                     className="w-full bg-red-500/20 hover:bg-red-500/40 text-red-300 border border-red-500/30 font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
-                 >
-                     <Lock size={16} /> Déconnexion
-                 </button>
-               </div>
-           </div>
-        )}
+
 
       </div>
 
@@ -2215,27 +2086,31 @@ const App = () => {
       {/* {process.env.NODE_ENV === 'development' && <ReferralTest />} */}
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-black/40 backdrop-blur-xl border-t border-white/10 z-20">
-        <div className="max-w-7xl mx-auto flex justify-around p-3">
+      {/* Bottom Nav - Refined & Responsive (4 items as per screenshot) */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/10 z-50 pb-safe">
+        <div className="max-w-md mx-auto grid grid-cols-4 gap-2 px-4 py-2">
           {[
-            { id: 'courses', icon: Book, label: t('nav.courses') },
-            { id: 'leaderboard', icon: Trophy, label: t('nav.leaderboard') },
-            { id: 'social', icon: Users, label: t('nav.social') },
-            { id: 'shop', icon: Gift, label: t('nav.shop') },
-            { id: 'profile', icon: User, label: t('profile') || 'Profile' }
-          ].map((tab) => (
+            { id: '/', icon: Book, label: t('nav.courses') },
+            { id: '/leaderboard', icon: Trophy, label: t('nav.leaderboard') },
+            { id: '/social', icon: Users, label: t('nav.social') },
+            { id: '/shop', icon: Gift, label: t('nav.shop') }
+          ].map((tab) => {
+            const isActive = location.pathname === tab.id;
+            return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${activeTab === tab.id
-                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black scale-110'
-                : 'text-white/70 hover:text-white hover:bg-white/10'
+              onClick={() => navigate(tab.id)}
+              className={`flex flex-col items-center justify-center w-full py-2 rounded-xl transition-all duration-300 ${isActive
+                ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-black shadow-lg shadow-orange-500/20 scale-105'
+                : 'text-white/50 hover:text-white hover:bg-white/5'
                 }`}
             >
-              <tab.icon size={22} />
-              <span className="text-xs font-semibold">{tab.label}</span>
+              <tab.icon size={20} strokeWidth={isActive ? 2.5 : 2} className={`mb-1 transition-transform ${isActive ? 'scale-110' : ''}`} />
+              <span className={`text-[10px] font-bold leading-none tracking-wide ${isActive ? 'opacity-100' : 'opacity-70'}`}>
+                {tab.label}
+              </span>
             </button>
-          ))}
+          )})}
         </div>
       </div>
     </div>
