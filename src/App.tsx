@@ -448,6 +448,35 @@ const App = () => {
     }
   };
 
+  // ✅ Fonction de synchronisation manuelle
+  const handleSyncProgress = async () => {
+    if (!user) return;
+    
+    try {
+      // Recharger depuis localStorage
+      const savedData = await getUserProfile(user.uid);
+      
+      if (savedData) {
+        // Mettre à jour userProgress avec données sauvegardées
+        setUserProgress((prev: any) => ({
+          ...prev,
+          ...savedData.userProgress,
+          // Recalculer l'énergie actuelle
+          energy: EnergySystem.calculateCurrentEnergy(savedData.userProgress.energy)
+        }));
+        
+        // Mettre à jour autres états si présents
+        if (savedData.isPremium !== undefined) setIsPremium(savedData.isPremium);
+        if (savedData.profilePicture) setProfilePicture(savedData.profilePicture);
+        if (savedData.socialPosts) setSocialPosts(savedData.socialPosts);
+        
+        console.log('✅ Progress synchronized successfully');
+      }
+    } catch (error) {
+      console.error('❌ Error syncing progress:', error);
+    }
+  };
+
   const handlePremiumUpgrade = () => {
     const PREMIUM_COST = 0.01;
 
@@ -1783,6 +1812,7 @@ const App = () => {
                 copyToClipboard={copyToClipboard}
                 handleLogout={handleLogout}
                 setShowWallet={setShowWallet}
+                onSyncProgress={handleSyncProgress}
              />
           } />
           <Route path="*" element={<Navigate to="/" replace />} />

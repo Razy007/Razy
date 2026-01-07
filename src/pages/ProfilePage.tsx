@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Trash2, Copy, Zap, Wallet, Share2, Lock } from 'lucide-react';
+import { Trash2, Copy, Zap, Wallet, Share2, Lock, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { User, UserProgress } from '../types';
 
@@ -13,6 +13,7 @@ interface ProfilePageProps {
   copyToClipboard: (text: string) => void;
   handleLogout: () => void;
   setShowWallet: (show: boolean) => void;
+  onSyncProgress?: () => void; // Fonction de synchronisation
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({
@@ -23,7 +24,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
   removeProfilePicture,
   copyToClipboard,
   handleLogout,
-  setShowWallet
+  setShowWallet,
+  onSyncProgress
 }) => {
   const { t } = useTranslation();
 
@@ -113,6 +115,31 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
           </div>
           </div>
       </div>
+
+      {/* Sync Button */}
+      {onSyncProgress && (
+        <div className="mt-4">
+          <button 
+              onClick={() => {
+                onSyncProgress();
+                // Feedback visuel
+                const btn = document.activeElement as HTMLButtonElement;
+                if (btn) {
+                  btn.innerText = '✅ Synchronized!';
+                  setTimeout(() => {
+                    btn.innerHTML = '<svg class="inline mr-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>Synchronize Data';
+                  }, 2000);
+                }
+              }}
+              className="w-full bg-blue-500/20 hover:bg-blue-500/40 text-blue-300 border border-blue-500/30 font-bold py-3 px-4 rounded-lg transition flex items-center justify-center gap-2"
+          >
+              <RefreshCw size={16} /> {t('profilePage.sync_data', { defaultValue: 'Synchronize Data' })}
+          </button>
+          <p className="text-white/50 text-xs text-center mt-2">
+            {t('profilePage.sync_desc', { defaultValue: 'Refresh your progress and XP data' })}
+          </p>
+        </div>
+      )}
 
       {/* Logout Button */}
       <div className="mt-4">
