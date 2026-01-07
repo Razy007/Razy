@@ -94,7 +94,27 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ userProgress, onSelectCourse 
               <p className="text-white/70 text-sm mb-4 line-clamp-2">{course.description}</p>
 
               {/* Stats Row */}
-              <div className="flex items-center gap-3 mb-4 text-sm">
+              <div className="flex items-center gap-3 mb-4 text-sm flex-wrap">
+                {/* Difficulty Badge */}
+                {course.difficulty && (
+                  <span className={`
+                    px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1
+                    ${course.difficulty === 'beginner' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : ''}
+                    ${course.difficulty === 'intermediate' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : ''}
+                    ${course.difficulty === 'advanced' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : ''}
+                    ${course.difficulty === 'expert' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : ''}
+                  `}>
+                    {course.difficulty === 'beginner' && '🟢'}
+                    {course.difficulty === 'intermediate' && '🟡'}
+                    {course.difficulty === 'advanced' && '🔴'}
+                    {course.difficulty === 'expert' && '🟣'}
+                    {course.difficulty === 'beginner' && t('difficulty.beginner', { defaultValue: 'Beginner' })}
+                    {course.difficulty === 'intermediate' && t('difficulty.intermediate', { defaultValue: 'Intermediate' })}
+                    {course.difficulty === 'advanced' && t('difficulty.advanced', { defaultValue: 'Advanced' })}
+                    {course.difficulty === 'expert' && t('difficulty.expert', { defaultValue: 'Expert' })}
+                  </span>
+                )}
+                
                 <div className="flex items-center gap-1 text-yellow-400">
                   <Trophy size={14} />
                   <span>{course.totalXp} XP</span>
@@ -181,6 +201,51 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ userProgress, onSelectCourse 
             </div>
           );
         })}
+      </div>
+
+      {/* Coming Soon - Future Features */}
+      <div className="mt-8 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 rounded-2xl p-6 border-2 border-purple-500/30">
+        <h3 className="text-white font-bold text-2xl mb-4 flex items-center gap-2">
+          🚀 {t('courses.coming_soon', { defaultValue: 'Coming Soon' })}
+        </h3>
+        <p className="text-white/70 mb-6">
+          {t('courses.coming_soon_desc', { defaultValue: 'Exciting new learning experiences in development!' })}
+        </p>
+        
+        <div className="grid md:grid-cols-3 gap-4">
+          {/* Feature 1: Simulations */}
+          <div className="bg-black/30 rounded-xl p-4 border border-purple-500/20 hover:border-purple-500/50 transition">
+            <div className="text-3xl mb-2">🎮</div>
+            <h4 className="text-yellow-400 font-bold mb-2">Interactive Simulations</h4>
+            <p className="text-white/60 text-sm">
+              Practice KYC, Staking, and Wallet Security in safe sandbox environment
+            </p>
+          </div>
+
+          {/* Feature 2: Case Studies */}
+          <div className="bg-black/30 rounded-xl p-4 border border-blue-500/20 hover:border-blue-500/50 transition">
+            <div className="text-3xl mb-2">📊</div>
+            <h4 className="text-yellow-400 font-bold mb-2">Real-World Case Studies</h4>
+            <p className="text-white/60 text-sm">
+              Analyze actual Pi Network scenarios and make strategic decisions
+            </p>
+          </div>
+
+          {/* Feature 3: Expert Courses */}
+          <div className="bg-black/30 rounded-xl p-4 border border-orange-500/20 hover:border-orange-500/50 transition">
+            <div className="text-3xl mb-2">🏆</div>
+            <h4 className="text-yellow-400 font-bold mb-2">Expert Certifications</h4>
+            <p className="text-white/60 text-sm">
+              Earn NFT certificates and unlock exclusive advanced content
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <p className="text-white/50 text-sm">
+            💡 {t('courses.stay_tuned', { defaultValue: 'Stay tuned for updates! New features added regularly.' })}
+          </p>
+        </div>
       </div>
 
       {/* Empty State (if no courses) */}
