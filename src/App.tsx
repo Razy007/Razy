@@ -31,6 +31,8 @@ import SocialPage from './pages/SocialPage';
 import ShopPage from './pages/ShopPage';
 import ProfilePage from './pages/ProfilePage';
 import CoursesPage from './pages/CoursesPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 import { CooldownManager } from './services/CooldownManager';
 import { QuizResults } from './components/education/QuizResults';
 import RetrySystem, { RetryHistory } from './services/RetrySystem';
@@ -1815,6 +1817,11 @@ const App = () => {
                 onSyncProgress={handleSyncProgress}
              />
           } />
+          
+          {/* Legal Pages - Now inside App to maintain auth context */}
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

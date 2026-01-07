@@ -7,8 +7,8 @@ const TermsOfServicePage: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClose = () => {
-    // Always return to home safely
-    navigate('/');
+    // Now that Terms is inside App, we can safely go back
+    navigate(-1);
   };
 
   return (

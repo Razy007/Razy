@@ -1,11 +1,9 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import './i18n'; // Force i18n init before render
-import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
-import TermsOfServicePage from './pages/TermsOfServicePage';
 
 console.log('🚀 Main.tsx starting...');
 
@@ -37,14 +35,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <Suspense fallback={<div className="text-white p-4">Loading App & Translations...</div>}>
         <BrowserRouter>
-          <Routes>
-            {/* Legal Pages (Public Routes) */}
-            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-            <Route path="/terms" element={<TermsOfServicePage />} />
-            
-            {/* Main App */}
-            <Route path="*" element={<App />} />
-          </Routes>
+          {/* All routing now handled inside App component */}
+          <App />
         </BrowserRouter>
       </Suspense>
     </ErrorBoundary>
