@@ -73,6 +73,8 @@ export const CommentThread: React.FC<CommentThreadProps> = ({
     const handleSubmitReply = (parentId: string) => {
         if (!replyContent.trim()) return;
         onAddComment(postId, replyContent, parentId);
+        
+        // ✅ FIX: Reset état et contenu après envoi
         setReplyContent('');
         setReplyingTo(null);
     };

@@ -214,7 +214,7 @@ const PrivacyPolicyPage: React.FC = () => {
               </ul>
 
               <p className="mb-4">
-                To exercise these rights, contact us at: <strong className="text-yellow-400">privacy@pioneeracademy.academy</strong>
+                To exercise these rights, contact us at: <a href="mailto:privacy@pioneeracademy.academy" className="text-yellow-400 hover:underline font-semibold">privacy@pioneeracademy.academy</a>
               </p>
             </section>
 
@@ -278,8 +278,8 @@ const PrivacyPolicyPage: React.FC = () => {
               <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-lg p-4">
                 <p className="font-semibold text-yellow-400">Academy of Pi - Privacy Team</p>
                 <p className="text-white/90 mt-2">
-                  <strong>Email:</strong> privacy@pioneeracademy.academy<br />
-                  <strong>Support:</strong> support@pioneeracademy.academy<br />
+                  <strong>Email:</strong> <a href="mailto:privacy@pioneeracademy.academy" className="text-yellow-400 hover:underline">privacy@pioneeracademy.academy</a><br />
+                  <strong>Support:</strong> <a href="mailto:support@pioneeracademy.academy" className="text-yellow-400 hover:underline">support@pioneeracademy.academy</a><br />
                   <strong>Website:</strong> https://www.pioneeracademy.academy
                 </p>
               </div>

@@ -211,7 +211,7 @@ const TermsOfServicePage: React.FC = () => {
                 <li>Duplicate transactions caused by platform bugs</li>
               </ul>
               <p className="mb-4">
-                Refund requests must be submitted within 48 hours of the transaction to <strong>support@pioneeracademy.academy</strong>
+                Refund requests must be submitted within 48 hours of the transaction to <a href="mailto:support@pioneeracademy.academy" className="text-yellow-400 hover:underline font-semibold">support@pioneeracademy.academy</a>
               </p>
             </section>
 
@@ -332,8 +332,8 @@ const TermsOfServicePage: React.FC = () => {
               <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-lg p-4">
                 <p className="font-semibold text-yellow-400">Academy of Pi - Legal Team</p>
                 <p className="text-white/90 mt-2">
-                  <strong>Email:</strong> legal@pioneeracademy.academy<br />
-                  <strong>Support:</strong> support@pioneeracademy.academy<br />
+                  <strong>Email:</strong> <a href="mailto:legal@pioneeracademy.academy" className="text-yellow-400 hover:underline">legal@pioneeracademy.academy</a><br />
+                  <strong>Support:</strong> <a href="mailto:support@pioneeracademy.academy" className="text-yellow-400 hover:underline">support@pioneeracademy.academy</a><br />
                   <strong>Website:</strong> https://www.pioneeracademy.academy
                 </p>
               </div>
