@@ -25,6 +25,7 @@ import { DECISION_SCENARIOS } from './data/decisionScenarios';
 import { CoursesTab } from './components/education/CoursesTab';
 import { QuestionRandomizer } from './services/QuestionRandomizer';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import Logo from './components/Logo';
 import LeaderboardPage from './pages/LeaderboardPage';
 import SocialPage from './pages/SocialPage';
 import ShopPage from './pages/ShopPage';
@@ -1166,12 +1167,8 @@ const App = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900">
         <div className="text-center">
-          <div className="w-20 h-20 mb-6 mx-auto">
-            <img 
-              src="/assets/pioneer-academy-logo.jpg" 
-              alt="Pioneer Academy" 
-              className="w-full h-full rounded-full object-cover border-4 border-yellow-400 animate-pulse"
-            />
+          <div className="mb-6 mx-auto">
+            <Logo size={120} className="animate-pulse" />
           </div>
           <p className="text-white text-xl font-semibold">{t('general.connecting')}</p>
         </div>
@@ -1322,11 +1319,7 @@ const App = () => {
       <div className="bg-black/40 backdrop-blur-xl p-4 sticky top-0 z-30 border-b border-white/10">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <img 
-              src="/assets/pioneer-academy-logo.jpg" 
-              alt="Pioneer Academy" 
-              className="w-12 h-12 rounded-full object-cover border-2 border-yellow-400"
-            />
+            <Logo size={48} className="flex-shrink-0" />
             <div>
               <h1 className="text-white font-bold text-base md:text-lg">Academy of Pi</h1>
               <p className="text-yellow-400 text-xs">Learn • Earn • Grow</p>
