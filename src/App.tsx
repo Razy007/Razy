@@ -761,7 +761,7 @@ const App = () => {
     
     if (layer.type === 'discovery') {
        // Enrich layer with varied, engaging content
-       const enrichedContent = enrichDiscoveryLayer(layer.id);
+       const enrichedContent = enrichDiscoveryLayer(layer.id, language);
        const enrichedLayer = enrichedContent 
          ? { ...layer, discoveryContent: enrichedContent }
          : layer;

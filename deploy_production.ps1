@@ -3,8 +3,6 @@ $ErrorActionPreference = "Stop"
 # ============================================================================
 # 🚀 DÉPLOIEMENT PRODUCTION - Academy of Pi
 # ============================================================================
-# Ce script déploie UNIQUEMENT le build optimisé (dist/) en production
-# ============================================================================
 
 Write-Host "`n🎯 DÉPLOIEMENT PRODUCTION - Academy of Pi" -ForegroundColor Cyan
 Write-Host "═══════════════════════════════════════════════════`n" -ForegroundColor Cyan
@@ -19,84 +17,71 @@ $remoteUser = "pioneer"
 $remoteTempZip = "/tmp/dist_deploy.zip"
 $remoteAppDir = "/var/www/pioneer-academy"
 
-# Vérifications préalables
+# 1. Vérifications
 Write-Host "🔍 Vérification de l'environnement..." -ForegroundColor Yellow
-
 if (-not (Test-Path $distDir)) {
-    Write-Host "❌ ERREUR: Le dossier dist/ n'existe pas !" -ForegroundColor Red
-    Write-Host "   Veuillez exécuter 'npm run build' d'abord.`n" -ForegroundColor Red
+    Write-Host "❌ ERREUR: dist/ non trouvé. Run 'npm run build'." -ForegroundColor Red
     exit 1
 }
-
 if (-not (Test-Path $keyPath)) {
-    Write-Host "❌ ERREUR: Clé SSH introuvable: $keyPath`n" -ForegroundColor Red
+    Write-Host "❌ ERREUR: Clé SSH non trouvée." -ForegroundColor Red
     exit 1
 }
 
-Write-Host "   ✅ dist/ trouvé" -ForegroundColor Green
-Write-Host "   ✅ Clé SSH trouvée`n" -ForegroundColor Green
-
-# Nettoyage ancien zip
-if (Test-Path $zipFile) { 
-    Write-Host "🧹 Suppression ancien zip..." -ForegroundColor Yellow
-    Remove-Item $zipFile 
-}
-
-# Compression du dossier dist/
+# 2. Nettoyage et Zip
+if (Test-Path $zipFile) { Remove-Item $zipFile }
 Write-Host "📦 Compression de dist/..." -ForegroundColor Cyan
-try {
-    Compress-Archive -Path "$distDir\*" -DestinationPath $zipFile -CompressionLevel Fastest -Force
-    $zipSize = (Get-Item $zipFile).Length / 1MB
-    Write-Host "   ✅ Zip créé: $([math]::Round($zipSize, 2)) MB`n" -ForegroundColor Green
-}
-catch {
-    Write-Host "❌ Erreur lors de la compression: $_`n" -ForegroundColor Red
-    exit 1
-}
+Compress-Archive -Path "$distDir\*" -DestinationPath $zipFile -CompressionLevel Fastest -Force
+Write-Host "   ✅ Zip créé." -ForegroundColor Green
 
-# Transfert SCP
+# 3. Transfert SCP
 Write-Host "🚀 Transfert vers $serverIp..." -ForegroundColor Cyan
-& scp -i "$keyPath" -o StrictHostKeyChecking=no "$zipFile" "${remoteUser}@${serverIp}:$remoteTempZip"
+scp -i "$keyPath" -o StrictHostKeyChecking=no "$zipFile" "${remoteUser}@${serverIp}:$remoteTempZip"
+if ($LASTEXITCODE -ne 0) { throw "Erreur SCP" }
+Write-Host "   ✅ Transfert réussi." -ForegroundColor Green
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Erreur lors du transfert SCP.`n" -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "   ✅ Transfert réussi !`n" -ForegroundColor Green
-
-# Déploiement sur le serveur
-Write-Host "📂 Déploiement sur le serveur..." -ForegroundColor Cyan
-
-$deployCommands = @"
-if [ -d $remoteAppDir/dist_backup ]; then rm -rf $remoteAppDir/dist_backup; fi
-if [ -d $remoteAppDir ]; then mv $remoteAppDir ${remoteAppDir}_backup; fi
-mkdir -p $remoteAppDir
-unzip -o $remoteTempZip -d $remoteAppDir
-rm $remoteTempZip
-sudo chown -R www-data:www-data $remoteAppDir
-sudo chmod -R 755 $remoteAppDir
-echo '✅ Déploiement terminé'
+# 4. Commandes SSH (Bash)
+# Note: Using a here-string for the commands, to be passed to SSH
+$remoteScript = @"
+    # Stop on error
+    set -e
+    
+    echo '📂 Preparing directory...'
+    # Backup current
+    if [ -d $remoteAppDir ]; then
+        # Remove old backup if exists
+        rm -rf ${remoteAppDir}_backup
+        # Move current to backup
+        mv $remoteAppDir ${remoteAppDir}_backup
+    fi
+    
+    # Create new dir
+    mkdir -p $remoteAppDir
+    
+    # Unzip
+    echo '📦 Unzipping...'
+    unzip -o $remoteTempZip -d $remoteAppDir > /dev/null
+    
+    # Cleanup zip
+    rm $remoteTempZip
+    
+    # Permissions
+    echo '🔒 Setting permissions...'
+    sudo chown -R www-data:www-data $remoteAppDir
+    sudo chmod -R 755 $remoteAppDir
+    
+    echo '✅ SUCCESS: Deployed to $remoteAppDir'
 "@
 
-& ssh -i "$keyPath" "${remoteUser}@${serverIp}" $deployCommands
+# 5. Exécution SSH
+Write-Host "🔧 Installation sur le serveur..." -ForegroundColor Cyan
+# We pipe the script to ssh to avoid quote escaping hell
+$remoteScript | ssh -i "$keyPath" -o StrictHostKeyChecking=no "${remoteUser}@${serverIp}" "bash -s"
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "❌ Erreur lors du déploiement.`n" -ForegroundColor Red
+if ($LASTEXITCODE -ne 0) { 
+    Write-Host "❌ Erreur lors du déploiement SSH." -ForegroundColor Red
     exit 1
 }
 
-# Nettoyage local
-Remove-Item $zipFile
-
-# Succès
-Write-Host "`n🎉 DÉPLOIEMENT RÉUSSI !" -ForegroundColor Green
-Write-Host "═══════════════════════════════════════════════════" -ForegroundColor Green
-Write-Host "🌍 URL: https://www.pioneeracademy.academy" -ForegroundColor Cyan
-Write-Host "📁 Chemin serveur: $remoteAppDir" -ForegroundColor Cyan
-Write-Host "🔙 Backup: ${remoteAppDir}_backup`n" -ForegroundColor Yellow
-
-Write-Host "⚠️  PROCHAINES ÉTAPES:" -ForegroundColor Yellow
-Write-Host "   1. Testez l'application sur www.pioneeracademy.academy" -ForegroundColor White
-Write-Host "   2. Si OK → Procéder au backup Git (Phase A1)" -ForegroundColor White
-Write-Host "   3. Si KO → Restaurer avec: mv ${remoteAppDir}_backup $remoteAppDir`n" -ForegroundColor White
+Write-Host "`n🎉 DÉPLOIEMENT TERMINÉ AVEC SUCCÈS !" -ForegroundColor Green
+Write-Host "🌍 https://www.pioneeracademy.academy" -ForegroundColor Cyan

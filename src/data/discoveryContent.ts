@@ -312,11 +312,32 @@ export function enrichDiscoveryLayer(layerId: string, lang: string = 'fr'): Disc
     if (!data) return null;
 
     // Helper pour extraire la bonne langue ou fallback FR
-    const t = (field: string | LocalizedContent | string[] | LocalizedArray | undefined) => {
-        if (typeof field === 'string') return field; // Pas encore traduit (legacy)
-        if (lang === 'en' && field.en) return field.en;
-        return field.fr || field;
+    const t = (field: string | LocalizedContent | string[] | LocalizedArray | undefined): string | string[] => {
+        // Si pas de donnée, retourner chaîne vide
+        if (!field) return '';
+        
+        // Si c'est déjà une string simple, la retourner
+        if (typeof field === 'string') return field;
+        
+        // Si c'est un tableau de strings, le retourner tel quel
+        if (Array.isArray(field)) return field;
+        
+        // Si c'est un objet avec propriétés de langue
+        if (typeof field === 'object' && field !== null) {
+            // Tenter d'accéder à la langue demandée
+            const localizedField = field as LocalizedContent | LocalizedArray;
+            if (lang === 'en' && 'en' in localizedField) {
+                return localizedField.en;
+            }
+            if ('fr' in localizedField) {
+                return localizedField.fr;
+            }
+        }
+        
+        // Fallback
+        return '';
     };
+
 
     return {
         ...data,
