@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { getCourses } from '../data/courses';
+import { getCourses, COURSES } from '../data/courses';
 import { Lock, CheckCircle, Play, Trophy, Zap } from 'lucide-react';
+import { XPProgressIndicator } from '../components/education/XPProgressIndicator';
 
 interface CoursesPageProps {
   userProgress: any;
@@ -47,6 +48,9 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ userProgress, onSelectCourse 
         <h2 className="text-3xl font-bold text-white mb-2">{t('nav.courses')}</h2>
         <p className="text-white/70">{t('common.loading')}</p>
       </div>
+
+      {/* XP Progress Indicator */}
+      <XPProgressIndicator userProgress={userProgress} allCourses={COURSES} />
 
       {/* Courses Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
