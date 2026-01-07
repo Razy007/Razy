@@ -301,7 +301,18 @@ const App = () => {
 
         // @ts-ignore
         if (typeof Pi !== 'undefined') {
-            await Pi.init({ version: "2.0", sandbox: true });
+            // ✅ CORRECTION: Utiliser variable d'environnement pour sandbox
+            // Production: VITE_PI_SANDBOX=false
+            // Development: VITE_PI_SANDBOX=true
+            const isSandbox = import.meta.env.VITE_PI_SANDBOX === 'true';
+            
+            await Pi.init({ 
+                version: "2.0", 
+                sandbox: isSandbox  // ✅ Dynamique selon environnement
+            });
+            
+            console.log(`✅ Pi SDK initialized (sandbox: ${isSandbox})`);
+            
             const scopes = ['username', 'payments'];
             const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
             
