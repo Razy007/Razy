@@ -1850,8 +1850,44 @@ const App = () => {
         />
       )}
 
-      {/* Referral Test Component (Development Only) - DÉSACTIVÉ PAR L'UTILISATEUR */}
-      {/* {process.env.NODE_ENV === 'development' && <ReferralTest />} */}
+      {/* Legal Footer - Required by Pi Network */}
+      <div className="pb-20 px-4">
+        <div className="max-w-md mx-auto border-t border-white/10 pt-6 pb-2">
+          <div className="flex flex-wrap justify-center items-center gap-4 text-xs text-white/50">
+            <a 
+              href="/privacy" 
+              className="hover:text-yellow-400 transition underline"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/privacy');
+              }}
+            >
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a 
+              href="/terms" 
+              className="hover:text-yellow-400 transition underline"
+              onClick={(e) => {
+                e.preventDefault();
+                navigate('/terms');
+              }}
+            >
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a 
+              href="mailto:support@pioneeracademy.academy" 
+              className="hover:text-yellow-400 transition"
+            >
+              Support
+            </a>
+          </div>
+          <p className="text-center text-[10px] text-white/30 mt-3">
+            © 2025 Academy of Pi • v2.0.0
+          </p>
+        </div>
+      </div>
 
       {/* Bottom Nav */}
       {/* Bottom Nav - Refined & Responsive (4 items as per screenshot) */}

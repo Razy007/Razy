@@ -150,6 +150,26 @@ const ProfilePage: React.FC<ProfilePageProps> = ({
             <Lock size={16} /> {t('profilePage.logout')}
         </button>
       </div>
+
+      {/* Legal & Info - Required by Pi Network */}
+      <div className="mt-6 pt-6 border-t border-white/10">
+        <div className="flex flex-wrap justify-center items-center gap-3 text-xs text-white/60 mb-3">
+          <a href="/privacy" className="hover:text-yellow-400 transition underline">
+            Privacy Policy
+          </a>
+          <span>•</span>
+          <a href="/terms" className="hover:text-yellow-400 transition underline">
+            Terms of Service
+          </a>
+          <span>•</span>
+          <a href="mailto:support@pioneeracademy.academy" className="hover:text-yellow-400 transition">
+            Contact Support
+          </a>
+        </div>
+        <p className="text-center text-[10px] text-white/40">
+          Academy of Pi v2.0.0
+        </p>
+      </div>
     </div>
   );
 };
