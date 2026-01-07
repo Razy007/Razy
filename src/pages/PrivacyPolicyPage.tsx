@@ -6,13 +6,23 @@ import Logo from '../components/Logo';
 const PrivacyPolicyPage: React.FC = () => {
   const navigate = useNavigate();
 
+  const handleBack = () => {
+    // Check if there's history to go back to
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      // If no history (direct access), go to home
+      navigate('/');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white">
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-xl p-4 sticky top-0 z-30 border-b border-white/10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <button
-            onClick={() => navigate(-1)}
+            onClick={handleBack}
             className="p-2 hover:bg-white/10 rounded-lg transition"
           >
             <ArrowLeft size={24} />
