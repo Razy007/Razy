@@ -46,7 +46,7 @@ const CoursesPage: React.FC<CoursesPageProps> = ({ userProgress, onSelectCourse 
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-3xl font-bold text-white mb-2">{t('nav.courses')}</h2>
-        <p className="text-white/70">{t('common.loading')}</p>
+        <p className="text-white/70">{t('courses.subtitle', { defaultValue: 'Learn • Earn • Grow with Pi' })}</p>
       </div>
 
       {/* XP Progress Indicator */}
