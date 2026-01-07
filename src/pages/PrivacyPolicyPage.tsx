@@ -1,37 +1,36 @@
 import React from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 
 const PrivacyPolicyPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleBack = () => {
-    // Check if there's history to go back to
-    if (window.history.length > 2) {
-      navigate(-1);
-    } else {
-      // If no history (direct access), go to home
-      navigate('/');
-    }
+  const handleClose = () => {
+    // Always return to home safely
+    navigate('/');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-black text-white">
       {/* Header */}
       <div className="bg-black/40 backdrop-blur-xl p-4 sticky top-0 z-30 border-b border-white/10">
-        <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <button
-            onClick={handleBack}
-            className="p-2 hover:bg-white/10 rounded-lg transition"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          <Logo size={40} />
-          <div>
-            <h1 className="text-white font-bold text-lg">Privacy Policy</h1>
-            <p className="text-yellow-400 text-xs">Academy of Pi</p>
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Logo size={40} />
+            <div>
+              <h1 className="text-white font-bold text-lg">Privacy Policy</h1>
+              <p className="text-yellow-400 text-xs">Academy of Pi</p>
+            </div>
           </div>
+          {/* Close Button - Right Side */}
+          <button
+            onClick={handleClose}
+            className="p-2 hover:bg-red-500/20 hover:bg-white/10 rounded-lg transition"
+            aria-label="Close"
+          >
+            <X size={24} className="text-white hover:text-red-400 transition" />
+          </button>
         </div>
       </div>
 
