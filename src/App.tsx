@@ -356,7 +356,7 @@ const App = () => {
       setKycStatus('none');
       setQuizActive(false);
       setShowCourseDetail(false);
-      setActiveTab('courses');
+      navigate('/'); // Navigate to home instead of setActiveTab (React Router)
     // }
   };
 
@@ -461,7 +461,7 @@ const App = () => {
     const roundedBalance = Math.round(userProgress.piBalance * 1000000) / 1000000;
     
     if (isNaN(roundedAmount) || roundedAmount <= 0) {
-      alert('⚠️ Montant invalide!\n\nVeuillez entrer un montant valide supérieur à 0.');
+      alert(t('alerts.invalid_amount'));
       return;
     }
     
@@ -470,31 +470,64 @@ const App = () => {
       return;
     }
 
+    const stakingStartDate = Date.now();
+    const stakingEndDate = stakingStartDate + (period * 24 * 60 * 60 * 1000); // Convert days to milliseconds
+
     setUserProgress((prev: any) => ({
       ...prev,
       piBalance: Math.round((prev.piBalance - roundedAmount) * 1000000) / 1000000,
       stakingBalance: Math.round((prev.stakingBalance + roundedAmount) * 1000000) / 1000000,
-      stakingStartDate: Date.now(),
+      stakingStartDate,
+      stakingEndDate, // 🆕 Store end date
       stakingPeriod: period
     }));
 
+    const endDateStr = new Date(stakingEndDate).toLocaleDateString();
     alert(t('alerts.staking_started', { 
       amount: roundedAmount.toFixed(6), 
       period: period, 
       apr: period === 30 ? '5' : period === 60 ? '8' : '12' 
-    }));
+    }) + `\n\n📅 Date de fin: ${endDateStr}`);
     setShowStaking(false);
   };
 
   const handleUnstake = () => {
     if (userProgress.stakingBalance === 0) {
-      alert('⚠️ Aucun Pi en staking!\n\nVous devez d\'abord staker des Pi avant de pouvoir les retirer.');
+      alert(t('alerts.no_stake'));
       return;
     }
 
+    // 🆕 Check if staking period has ended
+    const now = Date.now();
+    const endDate = userProgress.stakingEndDate || (userProgress.stakingStartDate + (userProgress.stakingPeriod * 24 * 60 * 60 * 1000));
+    const isExpired = now >= endDate;
+    const daysRemaining = Math.ceil((endDate - now) / (24 * 60 * 60 * 1000));
+
     // Round to 6 decimal places to avoid floating point precision issues
     const roundedStaking = Math.round(userProgress.stakingBalance * 1000000) / 1000000;
-    const roundedRewards = Math.round(userProgress.stakingRewards * 1000000) / 1000000;
+    let roundedRewards = Math.round(userProgress.stakingRewards * 1000000) / 1000000;
+
+    // 🆕 Apply early withdrawal penalty
+    if (!isExpired && daysRemaining > 0) {
+      const earlyWithdrawalPenalty = 0.10; // 10% penalty
+      const penaltyAmount = roundedRewards * earlyWithdrawalPenalty;
+      roundedRewards = Math.round((roundedRewards * (1 - earlyWithdrawalPenalty)) * 1000000) / 1000000;
+      
+      const confirmEarly = window.confirm(
+        `⚠️ UNSTAKE ANTICIPÉ\n\n` +
+        `Temps restant: ${daysRemaining} jour${daysRemaining > 1 ? 's' : ''}\n` +
+        `Pénalité: ${(earlyWithdrawalPenalty * 100)}% des récompenses\n\n` +
+        `Récompenses initiales: ${(roundedRewards / (1 - earlyWithdrawalPenalty)).toFixed(6)}π\n` +
+        `Pénalité: -${penaltyAmount.toFixed(6)}π\n` +
+        `Récompenses finales: ${roundedRewards.toFixed(6)}π\n\n` +
+        `Continuer ?`
+      );
+      
+      if (!confirmEarly) {
+        return;
+      }
+    }
+
     const total = Math.round((roundedStaking + roundedRewards) * 1000000) / 1000000;
 
     setUserProgress((prev: any) => ({
@@ -503,14 +536,19 @@ const App = () => {
       stakingBalance: 0,
       stakingRewards: 0,
       stakingStartDate: null,
+      stakingEndDate: null,
       stakingPeriod: null
     }));
+
+    const statusMsg = isExpired 
+      ? '✅ Période terminée - Pas de pénalité' 
+      : `⚠️ Unstake anticipé - Pénalité appliquée`;
 
     alert(t('alerts.unstake_success', {
       total: total.toFixed(6),
       principal: roundedStaking.toFixed(6),
       rewards: roundedRewards.toFixed(6)
-    }));
+    }) + `\n\n${statusMsg}`);
     setShowStaking(false);
   };
 
@@ -1460,6 +1498,18 @@ const App = () => {
                         {userProgress.stakingPeriod === 30 ? '5%' : userProgress.stakingPeriod === 60 ? '8%' : '12%'}
                       </span>
                     </div>
+                    {/* 🆕 Time Remaining Display */}
+                    {userProgress.stakingEndDate && (
+                      <div className="flex justify-between">
+                        <span>Temps restant:</span>
+                        <span className="font-bold text-yellow-400">
+                          {(() => {
+                            const remaining = Math.ceil((userProgress.stakingEndDate - Date.now()) / (24 * 60 * 60 * 1000));
+                            return remaining > 0 ? `${remaining} jour${remaining > 1 ? 's' : ''}` : 'Terminé ✅';
+                          })()}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
                       <span>Total à récupérer:</span>
                       <span className="font-bold text-yellow-400">
@@ -1733,6 +1783,8 @@ const App = () => {
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+      </div>
+      
       {/* Decision Lab Modal */}
       {showDecisionLab && currentScenario && (
         <DecisionLab

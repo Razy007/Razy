@@ -355,7 +355,49 @@ A distributed, immutable, and transparent ledger.`
             type: 'discovery',
             title: { fr: 'Le DeFi', en: 'DeFi' },
             description: { fr: 'Finance sans banque', en: 'Banking without banks' },
-            content: { fr: '...', en: '...' }, // Placeholder
+            content: { 
+                fr: `### DeFi : La Finance Décentralisée
+
+**Qu'est-ce que le DeFi ?**
+DeFi (Decentralized Finance) = Finance sans intermédiaire centralisé.
+
+**Cas d'usage principaux :**
+- 💱 **Échanges (DEX)** : Tradez sans KYC (ex: Uniswap)
+- 💰 **Prêts** : Empruntez/Prêtez sans banque
+- 📈 **Staking** : Gagnez des intérêts passifs
+- 🎯 **Yield Farming** : Optimisez vos rendements
+
+**Avantages :**
+✅ Pas de banque = Pas de censure
+✅ Accessible 24/7 partout dans le monde
+✅ Transparence totale (code open-source)
+
+**Risques :**
+⚠️ Smart contracts peuvent avoir des bugs
+⚠️ Volatilité des crypto-actifs
+⚠️ Responsabilité totale (pas de support client)`,
+                
+                en: `### DeFi: Decentralized Finance
+
+**What is DeFi?**
+DeFi (Decentralized Finance) = Finance without centralized intermediaries.
+
+**Main Use Cases:**
+- 💱 **Exchanges (DEX)**: Trade without KYC (e.g., Uniswap)
+- 💰 **Lending**: Borrow/Lend without banks
+- 📈 **Staking**: Earn passive interest
+- 🎯 **Yield Farming**: Optimize your returns
+
+**Advantages:**
+✅ No bank = No censorship
+✅ Accessible 24/7 worldwide
+✅ Full transparency (open-source code)
+
+**Risks :**
+⚠️ Smart contracts can have bugs
+⚠️ Crypto asset volatility
+⚠️ Full responsibility (no customer support)` 
+            },
             requiredMastery: 0,
             energyCost: 0,
             xpReward: 120,

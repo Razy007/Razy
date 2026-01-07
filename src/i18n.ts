@@ -70,6 +70,22 @@ const fr = {
       streak: "Série",
       xpDetail: "XP / Suivant"
     },
+    energy: {
+      shop_title: "Boutique d'Énergie",
+      shop_subtitle: "Rechargez votre énergie et boostez votre apprentissage",
+      current: "Énergie Actuelle",
+      price: "Prix",
+      quick_refill: "Recharge Rapide",
+      refill_desc: "Restaure instantanément 50⚡",
+      popular: "Populaire",
+      boost_24h: "Boost 24h",
+      boost_desc: "Double la régénération pendant 24h (+20⚡/h)",
+      best_value: "Meilleur Rapport",
+      unlimited: "Énergie Illimitée",
+      unlimited_desc: "Énergie infinie pendant 7 jours",
+      natural_regen: "Régénération Naturelle",
+      regen_info: "Votre énergie se régénère automatiquement à raison de +10⚡ par heure. Revenez après 12h d'absence pour un bonus de +20⚡!"
+    },
     auth: {
       guest_mode: "Mode Invité - Progrès non sauvegardés",
       login_pi: "Connexion avec Pi Network"
@@ -302,6 +318,22 @@ const en = {
       rank: "Rank",
       streak: "Streak",
       xpDetail: "XP / Next"
+    },
+    energy: {
+      shop_title: "Energy Shop",
+      shop_subtitle: "Recharge your energy and boost your learning",
+      current: "Current Energy",
+      price: "Price",
+      quick_refill: "Quick Refill",
+      refill_desc: "Instantly restore 50⚡",
+      popular: "Popular",
+      boost_24h: "Boost 24h",
+      boost_desc: "Double regen for 24h (+20⚡/h)",
+      best_value: "Best Value",
+      unlimited: "Unlimited Energy",
+      unlimited_desc: "Infinite energy for 7 days",
+      natural_regen: "Natural Regeneration",
+      regen_info: "Your energy regenerates automatically at +10⚡ per hour. Come back after 12h for a +20⚡ bonus!"
     },
     auth: {
       guest_mode: "Guest Mode - Progress not saved",
