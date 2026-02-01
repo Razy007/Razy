@@ -1,0 +1,11 @@
+=== DIAGNOSTIC MONGODB ATLAS - 2025-12-26 17:34:30 ===
+‚úÖ Connexion Internet OK
+‚úÖ Votre IP publique: 190.2.155.230
+‚úÖ DNS SRV r√©solu avec succ√®s
+   D√©tails: RÈponse ne faisant pas autoritÈ : System.Management.Automation.RemoteException Serveur :   UnKnown Address:  10.2.0.1  _mongodb._tcp.cluster0.y87z9is.mongodb.net	SRV service location: 	  priority       = 0 	  weight         = 0 	  port           = 27017 	  svr hostname   = ac-sh9juwq-shard-00-00.y87z9is.mongodb.net _mongodb._tcp.cluster0.y87z9is.mongodb.net	SRV service location: 	  priority       = 0 	  weight         = 0 	  port           = 27017 	  svr hostname   = ac-sh9juwq-shard-00-01.y87z9is.mongodb.net _mongodb._tcp.cluster0.y87z9is.mongodb.net	SRV service location: 	  priority       = 0 	  weight         = 0 	  port           = 27017 	  svr hostname   = ac-sh9juwq-shard-00-02.y87z9is.mongodb.net
+
+[4/5] Test de connectivit√© au port MongoDB (27017)...
+‚ùå Impossible de se connecter au port 27017: Exception lors de l'appel de ´†EndConnect†ª avec ´†1†ª argument(s)†: ´†HÙte inconnu†ª
+
+[5/5] V√©rification des outils MongoDB...
+‚úÖ Node.js install√©: v22.14.0

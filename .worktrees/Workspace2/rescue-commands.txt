@@ -1,0 +1,78 @@
+# ========================================
+# COMMANDES À EXÉCUTER EN MODE RESCUE
+# ========================================
+# Copiez/collez ces commandes UNE PAR UNE dans le terminal Rescue
+
+# ========================================
+# ÉTAPE 1 : IDENTIFIER LE DISQUE
+# ========================================
+lsblk
+
+# ========================================
+# ÉTAPE 2 : MONTER LE DISQUE
+# ========================================
+# ⚠️ REMPLACEZ sda1 par VOTRE disque si différent !
+# Exemples possibles : sda1, nvme0n1p1, vda1
+mount /dev/sda1 /mnt
+
+# ========================================
+# ÉTAPE 3 : VÉRIFIER LE MONTAGE
+# ========================================
+ls /mnt
+
+# ========================================
+# ÉTAPE 4 : CRÉER LE DOSSIER SSH
+# ========================================
+mkdir -p /mnt/home/pioneer/.ssh
+
+# ========================================
+# ÉTAPE 5 : AJOUTER LA CLÉ SSH
+# ========================================
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILTlNH7VhnZfPxmoLsy0HyKKhF5xVlyO5vE5SKGGhG0I abdoulrazaktanko06@gmail.com" > /mnt/home/pioneer/.ssh/authorized_keys
+
+# ========================================
+# ÉTAPE 6 : PERMISSIONS DOSSIER .SSH
+# ========================================
+chmod 700 /mnt/home/pioneer/.ssh
+
+# ========================================
+# ÉTAPE 7 : PERMISSIONS AUTHORIZED_KEYS
+# ========================================
+chmod 600 /mnt/home/pioneer/.ssh/authorized_keys
+
+# ========================================
+# ÉTAPE 8 : PROPRIÉTAIRE
+# ========================================
+chown -R 1000:1000 /mnt/home/pioneer/.ssh
+
+# ========================================
+# ÉTAPE 9 : VÉRIFICATION
+# ========================================
+cat /mnt/home/pioneer/.ssh/authorized_keys
+
+# ========================================
+# ÉTAPE 10 : DIAGNOSTIC FRONTEND
+# ========================================
+# 📋 COPIEZ LE RÉSULTAT ET ENVOYEZ-LE !
+ls -la /mnt/var/www/pioneer-academy/frontend/
+
+# ========================================
+# ÉTAPE 11 : DIAGNOSTIC NGINX
+# ========================================
+# 📋 COPIEZ LE RÉSULTAT ET ENVOYEZ-LE !
+cat /mnt/etc/nginx/sites-available/pioneer-academy
+
+# ========================================
+# ÉTAPE 12 : SORTIR
+# ========================================
+exit
+
+# ========================================
+# APRÈS AVOIR TAPÉ exit :
+# ========================================
+# 1. Allez sur https://console.hetzner.cloud/
+# 2. Servers → Votre serveur → Rescue
+# 3. Cliquez "Disable rescue & reboot"
+# 4. Attendez 1 minute
+# 5. Dans PowerShell : ssh pioneer@77.42.75.58
+# 6. CONNEXION AUTO ! 🎉

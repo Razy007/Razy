@@ -1,0 +1,82 @@
+# Dependencies
+node_modules/
+dist/
+build/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Testing
+coverage/
+.nyc_output/
+
+# Production
+*.tgz
+*.zip
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Specific logs
+build_log.txt
+
+# Security & Secrets (Exclusion Stricte)
+debug-mongo.js
+reset_user.sql
+*.sql
+backend/.env
+**/.env
+**/*.pem
+**/*.key
+**/*.log
+scratch/
+restore_temp/
+
+# Master Secrets File (DO NOT COMMIT)
+PROJECT_SECRETS_MASTER.txt
+
+# Sensitive Configuration Files (NEVER COMMIT)
+ecosystem.config.js
+test_db.js
+verify_mongo.ps1
+academy_deploy_key
+*.pem
+*.key
+
+# Documentation with secrets
+DIAGNOSTIC_COMPLET*.md
+FIX_MOBILE_CACHE.md
+
+# Deployment scripts with credentials
+deploy_*.zip
+*.tar.gz
+
+*.tar.gz
+
+.env.*

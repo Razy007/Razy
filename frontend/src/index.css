@@ -1,0 +1,142 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #fbbf24;
+  --primary-dark: #d97706;
+  --bg-dark: #0f172a;
+  --bg-gradient: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #000000 100%);
+  --accent-purple: #8b5cf6;
+  --accent-indigo: #6366f1;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  @apply antialiased text-white min-h-screen;
+  background: var(--bg-gradient) !important;
+  background-attachment: fixed !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: "Outfit", sans-serif;
+}
+
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.premium-card {
+  @apply bg-white/5 backdrop-blur-lg rounded-2xl shadow-2xl shadow-black/50 border border-white/10 p-8 transition-all duration-300 hover:shadow-yellow-500/10 hover:-translate-y-1 hover:border-yellow-500/30;
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-yellow-600;
+}
+
+/* Custom button styles to match the premium feel */
+.btn-premium {
+  @apply px-8 py-4 bg-gradient-to-br from-yellow-400 to-yellow-600 text-black font-bold rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-3;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full hover:bg-gray-600 transition-colors;
+}
+
+/* Animation utilities */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* --- Course Content Typography (Prose) --- */
+.prose {
+  color: #d1d5db; /* text-gray-300 fallback */
+  max-width: none;
+}
+
+.prose h1 {
+  @apply text-3xl font-black mb-6 text-white tracking-tight;
+  font-family: "Outfit", sans-serif;
+}
+
+.prose h2 {
+  @apply text-2xl font-black mt-10 mb-4 text-white uppercase tracking-wider;
+  font-family: "Outfit", sans-serif;
+}
+
+.prose h3 {
+  @apply text-xl font-black mt-8 mb-4 text-yellow-400 uppercase tracking-widest;
+  font-family: "Outfit", sans-serif;
+}
+
+.prose p {
+  @apply mb-6 leading-[1.8] text-slate-300 text-lg;
+}
+
+.prose strong {
+  @apply text-white font-bold;
+}
+
+.prose ul,
+.prose ol {
+  @apply mb-8 ml-6 space-y-4;
+}
+
+.prose li {
+  @apply relative pl-2 text-slate-300;
+}
+
+.prose ul li::before {
+  content: "•";
+  @apply absolute -left-6 text-yellow-500 font-black;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-yellow-500 bg-yellow-500/5 px-6 py-4 rounded-r-2xl italic my-8 text-slate-200;
+}
+
+.prose hr {
+  @apply border-white/5 my-12;
+}
+
+/* Layout helpers */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.pb-safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Fix mobile viewport height issues */
+.h-screen-safe {
+  height: 100vh;
+  height: -webkit-fill-available;
+}

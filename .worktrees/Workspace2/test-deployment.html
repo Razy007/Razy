@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pioneer Academy - Test de Déploiement</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 2.5em;
+      }
+
+      .test-section {
+        margin: 30px 0;
+        padding: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+      }
+
+      .test-section h2 {
+        color: #764ba2;
+        margin-bottom: 15px;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .status.success {
+        background: #4caf50;
+        color: white;
+      }
+
+      .status.error {
+        background: #f44336;
+        color: white;
+      }
+
+      .status.pending {
+        background: #ff9800;
+        color: white;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 10px 5px;
+        transition: transform 0.2s;
+      }
+
+      button:hover {
+        transform: scale(1.05);
+      }
+
+      pre {
+        background: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        margin-top: 10px;
+      }
+
+      .result {
+        margin-top: 15px;
+        padding: 15px;
+        border-radius: 5px;
+        background: #f9f9f9;
+      }
+
+      .iframe-container {
+        margin-top: 20px;
+        border: 2px solid #667eea;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      iframe {
+        width: 100%;
+        height: 600px;
+        border: none;
+      }
+
+      .responsive-test {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .device-frame {
+        flex: 1;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .device-frame h3 {
+        background: #667eea;
+        color: white;
+        padding: 10px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Pioneer Academy - Test de Déploiement</h1>
+
+      <!-- Test 1: API Health -->
+      <div class="test-section">
+        <h2>
+          1. API Health Check
+          <span class="status pending" id="health-status">En attente</span>
+        </h2>
+        <button onclick="testHealth()">Tester API Health</button>
+        <div class="result" id="health-result"></div>
+      </div>
+
+      <!-- Test 2: API Courses -->
+      <div class="test-section">
+        <h2>
+          2. API Courses
+          <span class="status pending" id="courses-status">En attente</span>
+        </h2>
+        <button onclick="testCourses()">Tester API Courses</button>
+        <div class="result" id="courses-result"></div>
+      </div>
+
+      <!-- Test 3: Frontend -->
+      <div class="test-section">
+        <h2>
+          3. Frontend Application
+          <span class="status pending" id="frontend-status">En attente</span>
+        </h2>
+        <button onclick="loadFrontend()">Charger l'Application</button>
+        <div
+          class="iframe-container"
+          id="frontend-container"
+          style="display: none"
+        >
+          <iframe id="frontend-iframe" src=""></iframe>
+        </div>
+      </div>
+
+      <!-- Test 4: Responsive -->
+      <div class="test-section">
+        <h2>4. Test Responsive</h2>
+        <button onclick="testResponsive()">Tester Responsive</button>
+        <div
+          class="responsive-test"
+          id="responsive-container"
+          style="display: none"
+        >
+          <div class="device-frame">
+            <h3>📱 Mobile (375px)</h3>
+            <iframe src="" style="width: 375px; height: 667px"></iframe>
+          </div>
+          <div class="device-frame">
+            <h3>💻 Desktop (1920px)</h3>
+            <iframe src="" style="width: 100%; height: 667px"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Test 5: Instructions manuelles -->
+      <div class="test-section">
+        <h2>5. Tests Manuels à Effectuer</h2>
+        <ul style="line-height: 2">
+          <li>
+            ✅ Vérifier que les cours s'affichent dans la section Discovery
+          </li>
+          <li>
+            ✅ Cliquer sur un cours et vérifier le contenu (vidéos, simulations)
+          </li>
+          <li>✅ Vérifier le système de déblocage des niveaux</li>
+          <li>✅ Tester le profil utilisateur et KYC</li>
+          <li>✅ Vérifier les prix dans la boutique (0.0005 π et 0.001 π)</li>
+          <li>✅ Tester Skills Analysis (radar chart)</li>
+          <li>✅ Vérifier la responsivité sur mobile</li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      const API_URL = "https://pioneeracademy.academy/api";
+      const FRONTEND_URL = "https://pioneeracademy.academy";
+
+      async function testHealth() {
+        const statusEl = document.getElementById("health-status");
+        const resultEl = document.getElementById("health-result");
+
+        statusEl.textContent = "Test en cours...";
+        statusEl.className = "status pending";
+
+        try {
+          const response = await fetch(`${API_URL}/health`);
+          const data = await response.json();
+
+          if (data.status === "OK") {
+            statusEl.textContent = "✅ Succès";
+            statusEl.className = "status success";
+            resultEl.innerHTML = `
+                        <strong>Résultat:</strong>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          } else {
+            throw new Error("Status not OK");
+          }
+        } catch (error) {
+          statusEl.textContent = "❌ Échec";
+          statusEl.className = "status error";
+          resultEl.innerHTML = `<strong>Erreur:</strong> ${error.message}`;
+        }
+      }
+
+      async function testCourses() {
+        const statusEl = document.getElementById("courses-status");
+        const resultEl = document.getElementById("courses-result");
+
+        statusEl.textContent = "Test en cours...";
+        statusEl.className = "status pending";
+
+        try {
+          const response = await fetch(`${API_URL}/courses`);
+          const data = await response.json();
+
+          if (data.success && data.count > 0) {
+            statusEl.textContent = `✅ ${data.count} cours trouvés`;
+            statusEl.className = "status success";
+
+            const coursesList = data.data
+              .map((course) => {
+                const type = course.layers ? "EnrichedCourse" : "LayerContent";
+                return `- ${course.title || course.layerId} (${type})`;
+              })
+              .join("<br>");
+
+            resultEl.innerHTML = `
+                        <strong>Cours disponibles:</strong><br>
+                        ${coursesList}
+                        <br><br>
+                        <strong>Exemple de cours:</strong>
+                        <pre>${JSON.stringify(data.data[0], null, 2).substring(
+                          0,
+                          500
+                        )}...</pre>
+                    `;
+          } else {
+            throw new Error("No courses found");
+          }
+        } catch (error) {
+          statusEl.textContent = "❌ Échec";
+          statusEl.className = "status error";
+          resultEl.innerHTML = `<strong>Erreur:</strong> ${error.message}`;
+        }
+      }
+
+      function loadFrontend() {
+        const statusEl = document.getElementById("frontend-status");
+        const container = document.getElementById("frontend-container");
+        const iframe = document.getElementById("frontend-iframe");
+
+        iframe.src = FRONTEND_URL;
+        container.style.display = "block";
+        statusEl.textContent = "✅ Chargé";
+        statusEl.className = "status success";
+
+        iframe.onload = function () {
+          console.log("Frontend loaded successfully");
+        };
+
+        iframe.onerror = function () {
+          statusEl.textContent = "❌ Erreur de chargement";
+          statusEl.className = "status error";
+        };
+      }
+
+      function testResponsive() {
+        const container = document.getElementById("responsive-container");
+        const iframes = container.querySelectorAll("iframe");
+
+        iframes.forEach((iframe) => {
+          iframe.src = FRONTEND_URL;
+        });
+
+        container.style.display = "flex";
+      }
+
+      // Auto-test au chargement
+      window.onload = function () {
+        console.log("Page de test chargée. Prêt pour les tests.");
+      };
+    </script>
+  </body>
+</html>

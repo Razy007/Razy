@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Academy of Pi | Apprendre & Gagner</title>
+
+    <!-- ⚠️ ORDRE CRITIQUE D'EXÉCUTION ⚠️ -->
+
+    <!-- 1️⃣ Universal MessageChannel Polyfill (EN PREMIER, avant tout le reste) -->
+    <script>
+      /**
+       * 🔧 Universal MessageChannel Polyfill
+       * Doit s'exécuter AVANT React pour corriger l'erreur "Illegal constructor"
+       *
+       * Problème: Certains navigateurs bloquent new MessageChannel() que React Scheduler utilise
+       * Solution: Tester MessageChannel et le remplacer par une version setTimeout si bloqué
+       */
+      (function () {
+        "use strict";
+
+        console.log("🔧 Universal MessageChannel polyfill initializing...");
+
+        // TOUJOURS tester MessageChannel (pas seulement dans Pi Browser)
+        if (typeof MessageChannel !== "undefined") {
+          try {
+            // Tester si MessageChannel fonctionne
+            const test = new MessageChannel();
+            test.port1.close();
+            test.port2.close();
+            console.log("✅ MessageChannel works natively");
+          } catch (err) {
+            console.warn(
+              "⚠️ MessageChannel blocked, installing polyfill...",
+              err.message,
+            );
+
+            // Remplacer MessageChannel par une version compatible
+            window.MessageChannel = function () {
+              const channel = {
+                port1: {
+                  onmessage: null,
+                  postMessage: function (data) {
+                    if (channel.port2.onmessage) {
+                      setTimeout(
+                        () => channel.port2.onmessage({ data: data }),
+                        0,
+                      );
+                    }
+                  },
+                  close: function () {},
+                  start: function () {},
+                },
+                port2: {
+                  onmessage: null,
+                  postMessage: function (data) {
+                    if (channel.port1.onmessage) {
+                      setTimeout(
+                        () => channel.port1.onmessage({ data: data }),
+                        0,
+                      );
+                    }
+                  },
+                  close: function () {},
+                  start: function () {},
+                },
+              };
+              return channel;
+            };
+
+            console.log("✅ MessageChannel polyfill installed");
+          }
+        }
+
+        console.log("✅ Polyfill ready");
+      })();
+    </script>
+
+    <!-- 2️⃣ Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 3️⃣ Google AdSense (Validation & Auto-Ads) -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1838729279763813"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- 4️⃣ Pi Network SDK (APRÈS le polyfill) -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+    <!-- 4️⃣ Vérification Pi SDK -->
+    <script>
+      console.log("🔍 Pi SDK loaded:", typeof window.Pi);
+      if (typeof window.Pi === "undefined") {
+        console.warn("⚠️ Pi SDK not loaded - running in guest mode");
+      }
+    </script>
+  </head>
+
+  <body class="bg-[#0f172a]">
+    <div id="root"></div>
+
+    <!-- 5️⃣ React app (EN DERNIER) -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
