@@ -393,6 +393,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         username: auth.user.username,
         accessToken: auth.accessToken,
         avatar: guestAvatar || '👤', // Keep guest avatar if they set one
+        kycVerified: true, // v2.5: Assume authenticated Pi users are verified contextually
+        userType: 'kyc_verified',
         userProgress: guestProgress ? {
             // MIGRATE ALL GUEST PROGRESS
             level: guestProgress.level || 1,
@@ -463,6 +465,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       username: 'Guest_Pioneer',
       accessToken: 'guest_token',
       avatar: '🕵️',
+      kycVerified: false,
+      userType: 'guest',
       userProgress: {
         level: 1,
         xp: 0,

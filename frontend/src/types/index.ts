@@ -218,6 +218,8 @@ export interface PiUser {
   // piBalance?: number; // Deprecated, use userProgress.economy.balance
   userProgress?: PiUserProgress;
   walletAddress?: string;
+  kycVerified?: boolean;
+  userType?: 'guest' | 'kyc_verified' | 'pioneer';
 }
 
 // Social Types
