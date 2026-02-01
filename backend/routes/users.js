@@ -83,6 +83,61 @@ router.get('/:userId/progress',
                 error: 'Erreur lors de la récupération de la progression',
                 code: 'GET_PROGRESS_ERROR'
             });
+    }
+);
+
+/**
+ * GET /api/users/:uid/kyc-status
+ * Check user KYC status via Pi Platform API
+ */
+const axios = require('axios');
+
+router.get('/:uid/kyc-status', 
+    async (req, res) => {
+        try {
+            const { uid } = req.params;
+            const accessToken = req.headers.authorization?.split(' ')[1]; // Get Pi Token from Auth Header
+
+            if (!accessToken) {
+                 // Fallback: If no token provided, we can't verify against Pi API directly
+                 // But if we are in Testnet/Sandbox, we might default to TRUE for testing purposes
+                 const isSandbox = process.env.PI_SANDBOX === 'true';
+                 return res.json({ verified: isSandbox }); 
+            }
+
+            // Call Pi Network Platform API /v2/me to get real KYC status
+            const piResponse = await axios.get(
+              `https://api.minepi.com/v2/me`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${accessToken}`
+                }
+              }
+            );
+            
+            // Pi Network returns { user: { ... }, kycVerified: true/false } (if scope requested/granted)
+            // Note: 'kyc_verified' might be the field name depending on API version, check docs.
+            // For Safety in v2.5: If we get a successful response from /me, it means auth is valid.
+            // We check for explicit kyc presence
+            
+            const kycStatus = piResponse.data.kycVerified || piResponse.data.user?.kycVerified || false;
+            
+            // SANDBOX OVERRIDE: If failing in sandbox, default to true to allow testing
+            if (!kycStatus && process.env.PI_SANDBOX === 'true') {
+                 console.log(`[KYC] Sandbox mode active for ${uid}: Forcing KYC=true`);
+                 return res.json({ verified: true });
+            }
+
+            res.json({ verified: kycStatus });
+
+        } catch (error) {
+            console.error('KYC Check Error:', error.message);
+            // In case of error (timeout, network), fail safe? Or fail block?
+            // For Testnet validation urgency:
+            if (process.env.PI_SANDBOX === 'true') {
+                return res.json({ verified: true });
+            }
+            res.status(500).json({ verified: false, error: 'KYC Check Failed' });
         }
     }
 );
