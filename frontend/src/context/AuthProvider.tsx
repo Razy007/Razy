@@ -352,40 +352,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
       }
       
-      let auth: PiAuthResult;
+      // DIRECT SIMPLE AUTH - BYPASSING PAYMENT SCOPE ISSUES
+      // On demandera les paiements plus tard au moment de l'achat
+      // We'll request payments later at purchase time
+      console.log("🔒 Simple Authentication (Username Only) / Authentification Simple (Nom d'utilisateur uniquement)...");
+      const scopes = ['username'];
       
-      // STRATÉGIE D'AUTHENTIFICATION PROGRESSIVE
-      // 1. Tenter l'auth complète (Username + Payments)
-      try {
-          console.log("🔒 Tentative Auth Complète (Username + Payments)...");
-          const scopes = ['username', 'payments'];
-          
-          const authPromise = Pi.authenticate(scopes, (payment: unknown) => {
-            console.log('Incomplete payment found:', payment);
-          });
-          
-          // Timeout court pour la première tentative (5s) pour basculer vite si bloqué
-          const timeoutPromise = new Promise<never>((_, reject) => 
-            setTimeout(() => reject(new Error("TIMEOUT_FULL_AUTH")), 5000)
-          );
+      const authPromise = Pi.authenticate(scopes, (_p: unknown) => { /* no-op */ });
+      
+      // Long timeout (30s) to be safe
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error("Authentication Timeout (Username Only). Please check URL in Developer Portal. / Délai d'attente dépassé (Nom d'utilisateur uniquement). Vérifiez l'URL dans le Portail Développeur.")), 30000)
+      );
 
-          auth = await Promise.race([authPromise, timeoutPromise]) as PiAuthResult;
-      } catch (error) {
-          console.warn("⚠️ Auth Complète échouée/trop longue. Bascule sur Auth Simple...", error);
-          
-          // 2. Fallback: Auth Simple (Username uniquement) - GARANTIT L'ACCÈS
-          const scopes = ['username'];
-          // Use no-op function instead of undefined to satisfy type checker
-          const authPromiseFallback = Pi.authenticate(scopes, (_p: unknown) => { /* no-op in simple auth */ }); 
-          
-          // Timeout un peu plus long pour le fallback (10s)
-          const timeoutPromiseFallback = new Promise<never>((_, reject) => 
-            setTimeout(() => reject(new Error("Délai d'attente dépassé (Pi Auth). Veuillez vérifier votre connexion.")), 10000)
-          );
-          
-          auth = await Promise.race([authPromiseFallback, timeoutPromiseFallback]) as PiAuthResult;
-          toast('Mode "Accès Simple" activé. Réactivez les paiements dans la boutique si nécessaire.', { icon: 'ℹ️' });
-      }
+      const auth = await Promise.race([authPromise, timeoutPromise]) as PiAuthResult;
 
       // 🔥 MERGE GUEST PROGRESS OR CREATE NEW
       const piUser: PiUser = {
