@@ -12,8 +12,13 @@ const startServer = async () => {
   try {
     // Initialize Database
     const db = Database.getInstance();
-    await db.query('SELECT 1');
-    console.log('✅ Database connected');
+    try {
+      await db.query('SELECT 1');
+      console.log('✅ Database connected');
+    } catch (dbError) {
+      console.error('⚠️ Database connection failed at startup:', dbError instanceof Error ? dbError.message : String(dbError));
+      console.log('Continuing server initiation in fallback mode...');
+    }
 
     // Initialize Audit Logger
     AuditLogger.initialize(db.pool);
@@ -41,6 +46,12 @@ const startServer = async () => {
         console.error('Error during shutdown:', e);
       }
       process.exit(0);
+    });
+
+    // Handle unexpected errors on the database pool
+    db.pool.on('error', (err) => {
+      console.error('Unexpected error on idle client in database pool:', err);
+      // Removed process.exit(-1) to allow recovery or continued operation
     });
 
   } catch (error) {
