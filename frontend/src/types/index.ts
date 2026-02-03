@@ -240,24 +240,11 @@ export interface QuizQuestion {
     correct: number;
     explanation: string;
     // Adaptive Metadata
-    difficulty: 'easy' | 'medium' | 'hard' | 'expert';
-    cognitiveLevel: 'knowledge' | 'comprehension' | 'application' | 'analysis';
+    difficulty: 'easy' | 'medium' | 'hard' | 'expert' | string;
+    cognitiveLevel: 'knowledge' | 'comprehension' | 'application' | 'analysis' | string;
     topic: string;
     subTopic?: string;
-    trapType?: 'scam_awareness' | 'misconception' | 'precision' | 'none' 
-    | 'similar-concepts' | 'negative-framing' | 'similar-institutions' | 'magnitude' 
-    | 'false-analogy' | 'visual-similarity' | 'scam-warning' | 'partial-truth' 
-    | 'naming-confusion' | 'temptation' | 'temporal-confusion' | 'terminology-confusion' 
-    | 'wishful-thinking' | 'fear-mongering' | 'restriction' | 'expectation' 
-    | 'critical-warning' | 'nuanced-comparison' | 'deep-reasoning' | 'technical-depth' 
-    | 'severity' | 'strategic-thinking' | 'complex-mechanism' | 'technical-nuance' 
-    | 'philosophical-depth' | 'security-best-practice' | 'confusion-public-private' 
-    | 'scenario-based' | 'absolute-rule' | 'urgency-tactic' | 'visual-deception' 
-    | 'authority-impersonation' | 'too-good-to-be-true' | 'technical-verification' 
-    | 'complex-pattern-recognition' | 'expectation-management' | 'privacy-concern'
-    | 'visual-identification' | 'greed-bait' | 'rule-violation' | 'fake-app' 
-    | 'misinformation' | 'convenience-trap' | 'obscure-term' | 'misunderstanding-mechanism' 
-    | 'panic-reaction' | 'comparison' | 'terminology' | 'technical-concept' | 'complex-concept';
+    trapType?: string;
     xpReward?: number; // Optional XP reward for answering correctly
 }
 

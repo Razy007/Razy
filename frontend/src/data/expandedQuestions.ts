@@ -13,6 +13,14 @@ import { BLOCKCHAIN_QUESTIONS_FR } from './blockchain-questions';
 import { DEFI_QUESTIONS_FR } from './defi-questions';
 import { PREMIUM_QUESTIONS_FR } from './premium-questions';
 
+// Import English translations
+import { WALLET_QUESTIONS_EN } from './wallet-questions-en';
+import { SAFETY_QUESTIONS_EN } from './safety-questions-en';
+import { KYC_QUESTIONS_EN } from './kyc-questions-en';
+import { BLOCKCHAIN_QUESTIONS_EN } from './blockchain-questions-en';
+import { DEFI_QUESTIONS_EN } from './defi-questions-en';
+import { PREMIUM_QUESTIONS_EN } from './premium-questions-en';
+
 // ========================================
 // MERGED EXPANDED QUESTIONS (FR)
 // ========================================
@@ -42,13 +50,13 @@ export const EXPANDED_QUESTIONS_FR: Record<string, QuizQuestion[]> = {
 // For now, use French as base - English translations can be added later
 // ========================================
 export const EXPANDED_QUESTIONS_EN: Record<string, QuizQuestion[]> = {
-    'wallet-l2-comprehension': WALLET_QUESTIONS_FR,
-    'safety-l2': SAFETY_QUESTIONS_FR,
-    'kyc-l2': KYC_QUESTIONS_FR,
-    'blockchain-l2': BLOCKCHAIN_QUESTIONS_FR,
-    'defi-l2': DEFI_QUESTIONS_FR,
-    'premium-l1': PREMIUM_QUESTIONS_FR,
-    'premium-l2': PREMIUM_QUESTIONS_FR,
+    'wallet-l2-comprehension': WALLET_QUESTIONS_EN,
+    'safety-l2': SAFETY_QUESTIONS_EN,
+    'kyc-l2': KYC_QUESTIONS_EN,
+    'blockchain-l2': BLOCKCHAIN_QUESTIONS_EN,
+    'defi-l2': DEFI_QUESTIONS_EN,
+    'premium-l1': PREMIUM_QUESTIONS_EN,
+    'premium-l2': PREMIUM_QUESTIONS_EN,
 };
 
 // ========================================

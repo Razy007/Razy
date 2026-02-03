@@ -1733,6 +1733,7 @@ import { QuizQuestion } from '../types';
 // ==========================================
 const BASE_QUESTION_BANK_EN: Record<string, QuizQuestion[]> = {
     'pi-intro-l2': [
+        // EASY (20 items)
         {
             id: 'q-pi-intro-1',
             question: "What makes Pi Network unique?",
@@ -1743,10 +1744,10 @@ const BASE_QUESTION_BANK_EN: Record<string, QuizQuestion[]> = {
         },
         {
             id: 'q-pi-intro-2',
-            question: "What is the GCV (General Consensus Value) of Pi?",
+            question: "What is the GCV (General Consensus Value) concept in Pi?",
             options: ["$100", "$314,159", "$1000", "$50"],
             correct: 1,
-            explanation: "The GCV is widely supported by the community at $314,159, referencing the mathematical constant π.",
+            explanation: "The GCV is a value supported by parts of the community at $314,159, referencing the mathematical constant π.",
             difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-economics', trapType: 'none'
         },
         {
@@ -1772,6 +1773,368 @@ const BASE_QUESTION_BANK_EN: Record<string, QuizQuestion[]> = {
             correct: 1,
             explanation: "Pi's vision is to build the world's most inclusive peer-to-peer ecosystem and online experience, fueled by Pi.",
             difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-vision', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-6',
+            question: "When was Pi Network launched?",
+            options: ["2017", "2019", "2020", "2021"],
+            correct: 1,
+            explanation: "Pi Network was launched on March 14, 2019 (Pi Day - 3/14).",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-history', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-7',
+            question: "Who founded Pi Network?",
+            options: ["MIT Students", "Stanford PhDs", "Satoshi Nakamoto", "Vitalik Buterin"],
+            correct: 1,
+            explanation: "Pi was founded by Stanford PhDs (Dr. Nicolas Kokkalis, Dr. Chengdiao Fan).",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-history', trapType: 'similar-institutions'
+        },
+        {
+            id: 'q-pi-intro-8',
+            question: "Does Pi Network require special hardware?",
+            options: ["Yes, a powerful GPU", "Yes, an ASIC miner", "No, just a smartphone", "Yes, a dedicated PC"],
+            correct: 2,
+            explanation: "Pi requires only a smartphone, making it accessible to everyone.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-basics', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-9',
+            question: "Approximately how many Pioneers does Pi Network have?",
+            options: ["1 million", "10 million", "50+ million", "500 million"],
+            correct: 2,
+            explanation: "Pi counts over 50 million engaged Pioneers worldwide.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-community', trapType: 'magnitude'
+        },
+        {
+            id: 'q-pi-intro-10',
+            question: "Does Pi Network drain your battery?",
+            options: ["Yes, heavily like Bitcoin", "No, minimal consumption", "Yes, requires hourly charging", "Depends on the phone"],
+            correct: 1,
+            explanation: "Pi is designed to have minimal impact on battery life as it doesn't compute proof-of-work puzzles.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-technology', trapType: 'false-analogy'
+        },
+        {
+            id: 'q-pi-intro-11',
+            question: "What is the symbol for Pi?",
+            options: ["₿", "Ξ", "π", "Π"],
+            correct: 2,
+            explanation: "The symbol for Pi is π (lowercase pi).",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-basics', trapType: 'visual-similarity'
+        },
+        {
+            id: 'q-pi-intro-12',
+            question: "Is Pi Network a blockchain?",
+            options: ["No, it's just an app", "Yes, it is a blockchain", "No, it's a game", "Yes, but centralized"],
+            correct: 1,
+            explanation: "Pi Network is indeed a decentralized blockchain ecosystem.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-technology', trapType: 'misconception'
+        },
+        {
+            id: 'q-pi-intro-13',
+            question: "Do you need to pay to mine Pi?",
+            options: ["Yes, $10/month", "Yes, $100 upfront", "No, it's completely free", "Yes, for Premium only"],
+            correct: 2,
+            explanation: "Mining Pi is 100% free; there are no hidden fees.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-basics', trapType: 'scam-warning'
+        },
+        {
+            id: 'q-pi-intro-14',
+            question: "How often must you mine Pi?",
+            options: ["Every hour", "Every 24 hours", "Once a week", "Continuously"],
+            correct: 1,
+            explanation: "You must check in and confirm your mining session every 24 hours.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-mining', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-15',
+            question: "Is Pi Network open source?",
+            options: ["No, completely closed", "Yes, partially", "Yes, totally", "Only for devs"],
+            correct: 1,
+            explanation: "Parts of Pi are open source (like the Pi Node and SDK), while others are proprietary during development.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-technology', trapType: 'partial-truth'
+        },
+        {
+            id: 'q-pi-intro-16',
+            question: "Can you sell your Pi right now (during Enclosed Mainnet)?",
+            options: ["Yes, on exchanges", "Yes, but only via P2P for goods/services", "No, strictly forbidden", "Yes, for cash"],
+            correct: 1,
+            explanation: "During Enclosed Mainnet, Pi can only be exchanged for goods and services within the ecosystem, not for fiat or other crypto on exchanges.",
+            difficulty: 'easy', cognitiveLevel: 'comprehension', topic: 'pi-economics', trapType: 'scam-warning'
+        },
+        {
+            id: 'q-pi-intro-17',
+            question: "What is a 'Pioneer' in Pi Network?",
+            options: ["A developer", "A user who mines Pi", "An admin", "An investor"],
+            correct: 1,
+            explanation: "A Pioneer is any user who has installed the app and mines Pi.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-terminology', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-18',
+            question: "Does Pi Network have a native token?",
+            options: ["No", "Yes, Pi (π)", "Yes, PiCoin", "No, it uses Bitcoin"],
+            correct: 1,
+            explanation: "Pi (π) is the native utility token of the Pi Network.",
+            difficulty: 'easy', cognitiveLevel: 'knowledge', topic: 'pi-basics', trapType: 'naming-confusion'
+        },
+        {
+            id: 'q-pi-intro-19',
+            question: "Can you create multiple Pi accounts?",
+            options: ["Yes, unlimited", "Yes, max 3", "No, strictly forbidden (1 person = 1 account)", "Yes, with different numbers"],
+            correct: 2,
+            explanation: "Strict rule: One person = One account. Multi-accounting leads to banning.",
+            difficulty: 'easy', cognitiveLevel: 'comprehension', topic: 'pi-rules', trapType: 'temptation'
+        },
+        {
+            id: 'q-pi-intro-20',
+            question: "What happens when the app is closed?",
+            options: ["Mining continues if session is active", "Mining stops", "Battery drains", "You lose Pi"],
+            correct: 0,
+            explanation: "Pi mining continues in the cloud/backend for the 24h cycle even if the app is closed.",
+            difficulty: 'easy', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'misconception'
+        },
+        // MEDIUM (20 items)
+        {
+            id: 'q-pi-intro-21',
+            question: "What creates the base mining rate for Pioneers?",
+            options: ["Time spent in app", "A formula based on network growth and halving", "Random generated", "Payment"],
+            correct: 1,
+            explanation: "The base mining rate is determined by a declining formula (halving) based on network size.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-mining', trapType: 'temporal-confusion'
+        },
+        {
+            id: 'q-pi-intro-22',
+            question: "What is the 'Security Circle'?",
+            options: ["An antivirus", "A trust group of 3-5 Pioneers securing the network", "A different coin", "A wallet type"],
+            correct: 1,
+            explanation: "The Security Circle is a group of 3-5 trusted individuals built by each Pioneer to secure the global trust graph.",
+            difficulty: 'medium', cognitiveLevel: 'application', topic: 'pi-security', trapType: 'terminology-confusion'
+        },
+        {
+            id: 'q-pi-intro-23',
+            question: "What is the main advantage of Pi Mainnet?",
+            options: ["More free Pi", "Real utility and exchange for goods/services", "Faster mining", "No KYC needed"],
+            correct: 1,
+            explanation: "Mainnet allows Pi to be used for real transactions within the ecosystem (dApps, goods, services).",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-ecosystem', trapType: 'wishful-thinking'
+        },
+        {
+            id: 'q-pi-intro-24',
+            question: "Why does Pi require internet connection to start mining?",
+            options: ["To download blockchain", "To verify account status and start the 24h timer", "To mine blocks", "Not needed"],
+            correct: 1,
+            explanation: "Internet is needed to ping the server and start the 24-hour mining session (proof of liveness).",
+            difficulty: 'medium', cognitiveLevel: 'application', topic: 'pi-mining', trapType: 'false-analogy'
+        },
+        {
+            id: 'q-pi-intro-25',
+            question: "What boosts your mining rate?",
+            options: ["Powerful phone", "Active Security Circle & Lockup", "Mining 24/7", "Paid subscription"],
+            correct: 1,
+            explanation: "Building a Security Circle, inviting others, and configuring a Lockup boost your mining rate.",
+            difficulty: 'medium', cognitiveLevel: 'application', topic: 'pi-mining', trapType: 'misconception'
+        },
+        {
+            id: 'q-pi-intro-26',
+            question: "What is 'Enclosed Mainnet'?",
+            options: ["A test network", "A phase where firewalls prevent external connectivity (exchanges)", "A closed wallet", "Different app"],
+            correct: 1,
+            explanation: "Enclosed Mainnet puts a firewall around Pi Network to build ecosystem utility before opening to external exchanges.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'terminology-confusion'
+        },
+        {
+            id: 'q-pi-intro-27',
+            question: "Max people in Security Circle for max rewards?",
+            options: ["3", "5", "10", "Unlimited"],
+            correct: 1,
+            explanation: "You need 5 trusted members in your Security Circle to reach the maximum security boost (100%).",
+            difficulty: 'medium', cognitiveLevel: 'knowledge', topic: 'pi-security', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-28',
+            question: "What happens if you miss a mining session?",
+            options: ["You lose all Pi", "Mining stops until you restart", "Nothing", "You get banned"],
+            correct: 1,
+            explanation: "Mining pauses after 24h. You must tap the button again to resume earning.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-mining', trapType: 'fear-mongering'
+        },
+        {
+            id: 'q-pi-intro-29',
+            question: "What is the role of a 'Contributor'?",
+            options: ["Mines more", "Adds security by adding members to Security Circle", "Develops apps", "Moderates chat"],
+            correct: 1,
+            explanation: "A Contributor adds to network security by building a trust graph (Security Circle).",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-roles', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-30',
+            question: "Can you transfer Pi before KYC?",
+            options: ["Yes, freely", "No, KYC is required to migrate balances", "Yes, with fees", "Only to friends"],
+            correct: 1,
+            explanation: "Balances mined are pending until the Pioneer passes KYC and migrates to Mainnet.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-security', trapType: 'restriction'
+        },
+        {
+            id: 'q-pi-intro-31',
+            question: "Purpose of the 'Halving'?",
+            options: ["Punish users", "Create scarcity by reducing supply over time", "Slow network", "Test patience"],
+            correct: 1,
+            explanation: "Halving reduces the mining rate as the network grows, creating scarcity and value potential.",
+            difficulty: 'medium', cognitiveLevel: 'analysis', topic: 'pi-economics', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-32',
+            question: "What is a Pi dApp?",
+            options: ["Mobile game", "Decentralized Application built on Pi Platform", "Standard website", "Virus"],
+            correct: 1,
+            explanation: "A dApp is an application that integrates with the Pi Blockchain and Pi SDK.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-ecosystem', trapType: 'terminology-confusion'
+        },
+        {
+            id: 'q-pi-intro-33',
+            question: "Does mining affect phone performance?",
+            options: ["Yes, significantly", "No, negligible impact", "Yes, slightly", "Only old phones"],
+            correct: 1,
+            explanation: "Since Pi doesn't do heavy Proof-of-Work locally, performance impact is negligible.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'misconception'
+        },
+        {
+            id: 'q-pi-intro-34',
+            question: "How long does KYC usually take?",
+            options: ["Instant", "Minutes to Weeks depending on volume and validation", "Exact 24h", "Years"],
+            correct: 1,
+            explanation: "KYC timing varies based on availability of human validators in your region and AI processing.",
+            difficulty: 'medium', cognitiveLevel: 'knowledge', topic: 'pi-security', trapType: 'expectation'
+        },
+        {
+            id: 'q-pi-intro-35',
+            question: "What means 'migrated to mainnet'?",
+            options: ["App update", "Transferable Balance moved to your Wallet", "New account", "Deleted account"],
+            correct: 1,
+            explanation: "Migration means your verified Pi balance is moved onto the live blockchain in your wallet.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'terminology-confusion'
+        },
+        {
+            id: 'q-pi-intro-36',
+            question: "Does Pi use Proof of Work (PoW)?",
+            options: ["Yes", "No, it uses SCP (Federated Byzantine Agreement)", "Yes, lite version", "Partially"],
+            correct: 1,
+            explanation: "Pi uses a variation of Stellar Consensus Protocol (FBA), not Proof of Work.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'false-analogy'
+        },
+        {
+            id: 'q-pi-intro-37',
+            question: "Can you lose your mined Pi?",
+            options: ["Yes, if you lose your Passphrase", "No, never", "Only if inactive", "Yes if KYC fails"],
+            correct: 0,
+            explanation: "If you migrate to Mainnet and lose your Wallet Passphrase, those Pi are lost forever.",
+            difficulty: 'medium', cognitiveLevel: 'application', topic: 'pi-security', trapType: 'critical-warning'
+        },
+        {
+            id: 'q-pi-intro-38',
+            question: "What is Pi Browser?",
+            options: ["Chrome equivalent", "A gateway to the Pi Web3 ecosystem", "Chat app", "External wallet"],
+            correct: 1,
+            explanation: "Pi Browser is the interface for accessing Pi Apps, Wallet, KYC, and the decentralized web.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-ecosystem', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-39',
+            question: "How does Pi prevent bots?",
+            options: ["Captchas", "Strict KYC (Liveness check)", "Time limits", "SMS verify"],
+            correct: 1,
+            explanation: "The liveness check during KYC ensures a real human is behind the account.",
+            difficulty: 'medium', cognitiveLevel: 'analysis', topic: 'pi-security', trapType: 'none'
+        },
+        {
+            id: 'q-pi-intro-40',
+            question: "Are pre-KYC Pi lost?",
+            options: ["Yes", "No, they wait for KYC verification", "Yes after 6 months", "Half lost"],
+            correct: 1,
+            explanation: "They remain in your unverified balance until you and your team pass KYC.",
+            difficulty: 'medium', cognitiveLevel: 'comprehension', topic: 'pi-security', trapType: 'fear-mongering'
+        },
+        // HARD (10 items)
+        {
+            id: 'q-pi-intro-41',
+            question: "Advantage of SCP over PoW?",
+            options: ["More secure", "Eco-friendly, scalable, fast finality", "More decentralized", "Total anonymity"],
+            correct: 1,
+            explanation: "SCP is vastly more energy efficient and faster (3-5s confirmation) than Bitcoin's PoW.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-technology', trapType: 'nuanced-comparison'
+        },
+        {
+            id: 'q-pi-intro-42',
+            question: "Why does Pi use an 'invitation' model?",
+            options: ["Revenue", "Build an organic Trust Graph for security", "Exclusivity", "Marketing"],
+            correct: 1,
+            explanation: "Referrals build the Security Circles (Trust Graph) which SCP uses for consensus validation.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-strategy', trapType: 'deep-reasoning'
+        },
+        {
+            id: 'q-pi-intro-43',
+            question: "What is 'Lockup'?",
+            options: ["Ban", "Voluntarily locking Pi for higher mining rate", "Penalty", "KYC type"],
+            correct: 1,
+            explanation: "Lockup is a mechanism to stabilize the token economy by incentivizing long-term holding.",
+            difficulty: 'hard', cognitiveLevel: 'comprehension', topic: 'pi-economics', trapType: 'terminology-confusion'
+        },
+        {
+            id: 'q-pi-intro-44',
+            question: "How does Pi maintain decentralization?",
+            options: ["Distributed Nodes & Trust Graph", "Central servers", "Single data center", "PoW"],
+            correct: 0,
+            explanation: "Rather than one central authority, thousands of Nodes using the Trust Graph secure the ledger.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-technology', trapType: 'technical-depth'
+        },
+        {
+            id: 'q-pi-intro-45',
+            question: "Risk of multi-accounting?",
+            options: ["Permanent ban & total loss of Pi", "Warning", "Half balance lost", "Suspension"],
+            correct: 0,
+            explanation: "Pi Network has a zero-tolerance policy for scripts/bots/multi-accounts. Result is total burn.",
+            difficulty: 'hard', cognitiveLevel: 'comprehension', topic: 'pi-rules', trapType: 'severity'
+        },
+        {
+            id: 'q-pi-intro-46',
+            question: "Why establish 'Phases' (Beta, Testnet, Mainnet)?",
+            options: ["Iterative testing and community building", "Delay tactics", "Random", "Hype"],
+            correct: 0,
+            explanation: "Phases allow the network to mature, debug, and scale organically before real economic value is at risk.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-strategy', trapType: 'strategic-thinking'
+        },
+        {
+            id: 'q-pi-intro-47',
+            question: "What determines Total Supply?",
+            options: ["Unlimited", "Mining mechanism + Activity + Network size", "Founders", "100 Billion fixed"],
+            correct: 3,
+            explanation: "The max supply is capped at 100 Billion Pi, distributed over time via mining rewards.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-economics', trapType: 'complex-mechanism'
+        },
+        {
+            id: 'q-pi-intro-48',
+            question: "How does Security Circle secure the network?",
+            options: ["Identifies malicious nodes via Trust Graph intersections", "Encryption", "Passwords", "Firewall"],
+            correct: 0,
+            explanation: "SCP uses intersections of Quorum Slices (Security Circles) to agree on transactions, blocking bad actors.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-security', trapType: 'deep-reasoning'
+        },
+        {
+            id: 'q-pi-intro-49',
+            question: "Key difference Testnet vs Mainnet?",
+            options: ["Testnet = Fake Pi, Mainnet = Real Pi", "None", "Speed", "KYC"],
+            correct: 0,
+            explanation: "Testnet coins have no value and are reset periodically. Mainnet coins are permanent assets.",
+            difficulty: 'hard', cognitiveLevel: 'comprehension', topic: 'pi-technology', trapType: 'technical-nuance'
+        },
+        {
+            id: 'q-pi-intro-50',
+            question: "Why prioritize 'Peer-to-Peer'?",
+            options: ["Cut middlemen costs & empower individuals", "Trend", "Avoid laws", "Simple"],
+            correct: 0,
+            explanation: "Pi aims to return value to creators/users (Pioneers) rather than tech giants or banks.",
+            difficulty: 'hard', cognitiveLevel: 'analysis', topic: 'pi-philosophy', trapType: 'philosophical-depth'
         }
     ],
     'wallet-l2-comprehension': [
